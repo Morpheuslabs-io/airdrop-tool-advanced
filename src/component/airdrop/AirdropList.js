@@ -180,7 +180,12 @@ class AirdropList extends Component {
           <div className='widget-header'>
             <div>
               <p className='title'>Airdrop Tool</p>
-              <p className='description'>Please enter information</p>
+              <p className='description'>
+                This tool is used to airdrop a specified ERC20 token to thousands of wallet addresses that are provided by uploading a CSV file or by adding manually.
+              </p>
+              <p className='description'>
+                <b> Either Rinkeby testnet or Mainnet is supported. </b>
+              </p>
             </div>
           </div>
           {
@@ -197,7 +202,7 @@ class AirdropList extends Component {
                 <div>
                   <Row>
                     <Col md={5}>
-                      <InputField id='erc20Address' nameLabel='ERC20 Token Address' type='text' onChange={this.handleChange} value={this.state.erc20Address}
+                      <InputField id='erc20Address' nameLabel='ERC20 Token Address' tooltip='This is the address of the token for airdrop' type='text' onChange={this.handleChange} value={this.state.erc20Address}
                                   onBlur={this.handleBlurERC20Address} hasError={this.state.errorErc20Address}/>
                     </Col>
                   </Row>
