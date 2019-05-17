@@ -1,4 +1,4 @@
-# Airdrop Advanced Tool
+# Airdrop Basic Tool
 
 Send any ERC20 tokens to thousands of receivers
 
@@ -8,7 +8,8 @@ Send any ERC20 tokens to thousands of receivers
 
 ## Configuration
 
-The configuration is specified in the file `.env`
+The configuration is specified in file `.env`.
+Please change the `PORT` accordingly.
 
 ## System start
 
@@ -18,13 +19,11 @@ The configuration is specified in the file `.env`
 
   - start: `pm2 start pm2/script_airdrop.sh`
 
-  - Listenning port: `3000`
-
 ### Local development
 
   - build: `yarn build`
 
   - start: `yarn start`
 
-  - Listenning port: `3000`
+Listenning port: specified in file `.env` at `PORT`
 
