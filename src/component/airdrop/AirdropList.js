@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import Papa from 'papaparse';
 import Button2 from '@material-ui/core/Button';
 import swal from "sweetalert2";
-import {isValidAddress, getNetworkName} from '../../util/blockchainHelper';
+import {isValidAddress, getNetworkName, preCheckMetaMask, getMetamaskAddress} from '../../util/blockchainHelper';
 import Spinner from 'react-spinkit';
 
 import AirdropModal from './AirdropModal'
@@ -130,13 +130,16 @@ class AirdropList extends Component {
   airdropWithMetamask = () => {
     // console.log('airdropWithMetamask - this.state.erc20Address:', this.state.erc20Address)
     // console.log('airdropWithMetamask - this.state.airdroplist:', this.state.airdroplist)
+    preCheckMetaMask()
     let metamaskNet = getNetworkName()
-    let chosenNet = this.props.radioSelected
-    if (metamaskNet !== chosenNet) {
-      swal(`Your currently-chosen net (${chosenNet}) is different from current Metamask net (${metamaskNet})`, "", "warning");
+    if (metamaskNet.toLowerCase() !== 'rinkeby' && metamaskNet.toLowerCase() !== 'mainnet' ) {
+      swal("Please use Rinkeby or Mainnet", `Your current Metamask network (${metamaskNet}) is not supported.`, "warning");
       return
     }
-    this.handleToggleModal()
+
+    if (getMetamaskAddress()) {
+      this.handleToggleModal()
+    }
   }
 
   handleToggleModal = () => {
