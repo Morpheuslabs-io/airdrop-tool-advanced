@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import './assets/bootstrap/scss/bootstrap.scss';
 import './assets/styles/index.scss';
 import './assets/fontawesome-free-5.8.2-web/css/all.css'
+import './index.css'
 
 import App from './App';
 import * as serviceWorker from './serviceWorker';
