@@ -66,7 +66,7 @@ import { sha256 } from 'js-sha256';
 
   }
 
-  export function buildPayloadSampleNotWork(fileBase64) {
+  export function buildPayloadSample(fileBase64) {
 
     let payload = {
       //your unique request reference
@@ -118,7 +118,7 @@ import { sha256 } from 'js-sha256';
 
   }
 
-  export function buildPayloadSample(fileBase64) {
+  export function buildPayloadSampleSimple(fileBase64) {
 
     let payload = {
       //your unique request reference
