@@ -7,7 +7,7 @@ import { Navbar, Nav, NavDropdown, Badge } from 'react-bootstrap'
 
 import KycForm from './KycForm';
 
-class Airdrop extends Component {
+class KycContainer extends Component {
 
   state = {
 
@@ -35,9 +35,7 @@ class Airdrop extends Component {
           <div className='page-wrapper d-flex flex-column'>
             <div className='step-content'>
               <div className='container step-widget pt-0'>
-                <KycForm
-                  radioSelected={this.state.radioSelected}
-                />
+                <KycForm />
               </div>
             </div>
           </div>
@@ -47,4 +45,4 @@ class Airdrop extends Component {
   }
 }
 
-export default Airdrop;
+export default KycContainer;

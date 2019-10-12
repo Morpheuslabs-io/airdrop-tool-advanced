@@ -11,11 +11,16 @@ import Spinner from 'react-spinkit';
 import { YearPicker, MonthPicker, DayPicker } from 'react-dropdown-date';
 import Select from 'react-select'
 import countryList from 'react-select-country-list'
+import ReactDropzone from "react-dropzone";
+import "react-image-gallery/styles/css/image-gallery.css";
 
 class KycForm extends Component {
 
   state = {
     firstName: '',
+    lastName: '',
+    email: '',
+    docNum: '',
 
     year: null, month: null, day: null,
 
@@ -24,6 +29,9 @@ class KycForm extends Component {
 
     valueDocType: 0,
     labelDocType: 'Passport',
+
+    urlFile: "",
+    fileBase64: [],
 
     spinnerShow: false,
 
@@ -86,7 +94,7 @@ class KycForm extends Component {
               value={this.state.month}
               // mandatory
               onChange={(month) => {
-                month = Number(month) + 1
+                // month = Number(month) + 1
                 this.setState({ month });
                 console.log(month);
               }}
@@ -176,14 +184,48 @@ class KycForm extends Component {
   };
 
   handleSubmit = () => {
+    // day: "2"
+    // docNum: "123"
+    // email: "midotrinh@gmail.com"
+    // firstName: "Mila"
+    // isProcessing: false
+    // labelDocType: "Passport"
+    // ​valueDocType: 0,
+    // lastName: "Trinh"
+    // month: "4"
+    // value: {…}
+    //   label: "Viet Nam"
+    //   value: "VN"
+    // year: "1930"
+    // fileBase64
 
-    
   }
 
+  onFileDrop = (files) => {
+    if (files && files[0]) {
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        this.setState({
+          fileBase64: reader.result,
+          urlFile: e.target.result,
+        });
+      };
+      reader.readAsDataURL(files[0]);
+    }
+  };
+
   render() {
+    const {urlFile} = this.state
     let docTypes = [];
     docTypes.push({ label: "Passport", value: 0 });
     docTypes.push({ label: "ID Card", value: 1 });
+
+    const previewStyle = {
+      display: 'inline',
+      width: '100%',
+      height: '100%'
+    };
 
     return (
       <div className='container step-widget widget-1'>
@@ -260,13 +302,22 @@ class KycForm extends Component {
                   </Col>
                   <Col md={6}>
                     <div style={{paddingTop: '27px'}}>
-                      <input id='upload-csv' className='upload-csv' multiple type='file' onChange={this.handleUploadCSV}/>
-                      <label htmlFor='upload-csv'>
-                        <Button2 variant="contained" component='span' className='upload-btn'>
-                          <i className='fas fa-upload'/>
-                          &nbsp; Upload CSV
-                        </Button2>
-                      </label>
+                      <ReactDropzone
+                      
+                        style={{position: 'relative', width: '200px', height: '200px', borderWidth: '2px', borderColor: '#f0f0f0', borderStyle: 'dashed', borderRadius: '5px', ariaDisabled: "false"}}
+
+                        accept="image/*"
+                        onDrop={this.onFileDrop}
+                      >
+                        {urlFile === "" ?
+                            "Drag & Drop Your Document"
+                          :
+                          <img
+                            src={urlFile}
+                            style={previewStyle}
+                          />
+                        }
+                      </ReactDropzone>
                     </div>
                   </Col>
                 </Row>

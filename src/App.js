@@ -1,11 +1,11 @@
 import React from 'react';
 import logo from './logo.svg';
-import Airdrop from './component/airdrop'
+import KycContainer from './component/kyc'
 
 function App() {
   return (
     <div className="App">
-      <Airdrop />
+      <KycContainer />
     </div>
   );
 }
