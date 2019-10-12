@@ -13,6 +13,8 @@ import Select from 'react-select'
 import countryList from 'react-select-country-list'
 import ReactDropzone from "react-dropzone";
 import "react-image-gallery/styles/css/image-gallery.css";
+import './snippet'
+import { buildPayloadSample, doFetch, doFetchTest } from './snippet';
 
 class KycForm extends Component {
 
@@ -28,7 +30,7 @@ class KycForm extends Component {
     value: null,
 
     valueDocType: 0,
-    labelDocType: 'Passport',
+    labelDocType: "Passport",
 
     urlFile: "",
     fileBase64: [],
@@ -36,7 +38,7 @@ class KycForm extends Component {
     spinnerShow: false,
 
     showModal: false,
-    isProcessing: false,
+    isProcessing: false
   };
 
   changeHandler = value => {
@@ -198,6 +200,28 @@ class KycForm extends Component {
     //   value: "VN"
     // year: "1930"
     // fileBase64
+
+    const {
+      firstName,
+      lastName,
+      email,
+      docNum,
+      year, month, day,
+      value,
+      fileBase64
+    } = this.state;
+
+    // const data = {
+    //   firstName, lastName, email, 
+    //   dob: `${year}-${parseFloat(month)+1}-${day}`, 
+    //   country: value.label,
+    //   fileBase64, docNum, 
+    //   // docType: this.state.​valueDocType === 0 ? 'passport' : 'id_card'
+    // }
+
+    const payload = buildPayloadSample(fileBase64)
+    const result = doFetch(payload)
+    // const result = doFetchTest()
 
   }
 
