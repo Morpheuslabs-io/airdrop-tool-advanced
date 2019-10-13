@@ -446,17 +446,17 @@ class KycForm extends Component {
     // const payload = buildPayloadSample(fileDocBase64)
     const payload = buildPayload(data)
     const result = await doFetch(payload)
-    if (result === true) {
-      Swal.fire({
-        type: 'success',
-        title: 'KYC Submission',
-        text: 'Received!'
-      })
-    } else {
+    if (result === null) {
       Swal.fire({
         type: 'error',
         title: 'KYC Submission',
-        text: 'Failed!'
+        text: 'Signature not validated'
+      })
+    } else {
+      Swal.fire({
+        type: result.text === '' ? 'success' : 'error',
+        title: result.title,
+        text: result.text
       })
     }
   }

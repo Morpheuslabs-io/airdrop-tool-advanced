@@ -236,10 +236,10 @@ import { sha256 } from 'js-sha256';
       }).then(function(data) {
           if(validatesignature(data,responsesignature,'$2y$10$yY0MK0wJd10b9h4IS00SFO0nnsnNo96VvEQyVpch2o50n7Fg9G1Zu')){
               console.log('signature validated - data:',data)
-              resolve(true)
+              resolve({title: data.event, text: data.declined_reason || ''})
           }else{
               console.log('signature not validated - data:',data)
-              resolve(false)
+              resolve(null)
           }
       });
     });
