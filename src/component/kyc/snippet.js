@@ -38,7 +38,7 @@ import { sha256 } from 'js-sha256';
     }
 
     //face onsite verification
-    payload['face'] = fileBase64
+    payload['face'] = ""
     //document onsite verification with OCR
     payload['document'] = {
       name : {
@@ -46,20 +46,21 @@ import { sha256 } from 'js-sha256';
         last_name		 : lastName,
         fuzzy_match	 : '1'
       },
+      proof             : fileBase64,
       dob								: dob,
-      document_number	: docNum,
-      expiry_date				: '2025-10-10',
-      issue_date					: '2015-10-10',
+      document_number	  : docNum,
+      expiry_date				: expire,
+      issue_date				: issue,
       supported_types		: ['id_card','passport']
     }
     //background check/AML verification with OCR
     payload['background_checks'] = {
       name : {
-          first_name			: 'Your first name',
-          middle_name	: 'Your middle name',
-          last_name			: 'You last name',
+          first_name			: firstName,
+          middle_name	    : '',
+          last_name			  : lastName,
       },
-      dob		: '1994-01-01',
+      dob		: dob,
     }
 
     return payload
