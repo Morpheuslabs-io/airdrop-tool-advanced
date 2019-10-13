@@ -38,7 +38,10 @@ import { sha256 } from 'js-sha256';
     }
 
     //face onsite verification
-    payload['face'] = fileFaceBase64
+    payload['face'] = {
+      proof          : fileFaceBase64,
+      allow_offline  : "1",
+    };
     //document onsite verification with OCR
     payload['document'] = {
       name : {
