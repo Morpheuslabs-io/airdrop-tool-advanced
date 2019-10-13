@@ -432,6 +432,10 @@ class KycForm extends Component {
       return
     }
 
+    this.setState({
+      spinnerShow: true
+    })
+
     const data = {
       firstName, lastName, email, 
       dob: `${yearDob}-${parseFloat(monthDob)+1}-${dayDob}`, 
@@ -446,6 +450,11 @@ class KycForm extends Component {
     // const payload = buildPayloadSample(fileDocBase64)
     const payload = buildPayload(data)
     const result = await doFetch(payload)
+
+    this.setState({
+      spinnerShow: false
+    })
+
     if (result === null) {
       Swal.fire({
         type: 'error',
@@ -508,17 +517,7 @@ class KycForm extends Component {
               <p className='title'>KYC Submission Tool</p>
             </div>
           </div>
-          {
-            this.state.spinnerShow ?
-              <div>
-                <Spinner 
-                  className='justify-content-center align-items-center mx-auto' 
-                  name='three-bounce' color='#00B1EF' style={{ width: 100, margin: 250 }}
-                  noFadeIn
-                />
-              </div>
-              :
-              <div className='wg-content'>
+          <div className='wg-content'>
                 <Row>
                   <Col md={6}>
                     <InputField 
@@ -591,7 +590,16 @@ class KycForm extends Component {
                         onClick={this.handleSubmit}
                         variant='contained' size='lg' color="secondary"
                       >
-                          Submit
+                        {
+                          this.state.spinnerShow ?
+                            <Spinner 
+                              name='three-bounce' color='#00B1EF'
+                              noFadeIn
+                            />
+                            :
+                            'Submit'
+                        }  
+                        
                       </Button>
                     </div>
                   </Col>
@@ -635,7 +643,6 @@ class KycForm extends Component {
                   </Col>
                 </Row>
               </div>
-          }
         </div>
     );
   }
