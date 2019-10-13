@@ -12,7 +12,7 @@ import { sha256 } from 'js-sha256';
   export function buildPayload(data) {
 
     const {
-      firstName, lastName, email, dob, country, fileBase64,
+      firstName, lastName, email, dob, country, fileDocBase64, fileFaceBase64,
       docType, docNum, issue, expire
     } = data
 
@@ -38,7 +38,7 @@ import { sha256 } from 'js-sha256';
     }
 
     //face onsite verification
-    payload['face'] = ""
+    payload['face'] = fileFaceBase64
     //document onsite verification with OCR
     payload['document'] = {
       name : {
@@ -46,7 +46,7 @@ import { sha256 } from 'js-sha256';
         last_name		 : lastName,
         fuzzy_match	 : '1'
       },
-      proof             : fileBase64,
+      proof             : fileDocBase64,
       dob								: dob,
       document_number	  : docNum,
       expiry_date				: expire,

@@ -35,8 +35,11 @@ class KycForm extends Component {
     valueDocType: 0,
     labelDocType: "Passport",
 
-    urlFile: "",
-    fileBase64: [],
+    urlFileDoc: "",
+    fileDocBase64: "",
+
+    urlFileFace: "",
+    fileFaceBase64: "",
 
     spinnerShow: false,
 
@@ -250,7 +253,7 @@ class KycForm extends Component {
               // default is 1900
               start={1930}
               // default is current year
-              // end={2004}
+              end={(new Date()).getFullYear() + 20}
               // default is ASCENDING
               // reverse
               // default is false
@@ -394,7 +397,7 @@ class KycForm extends Component {
     //   label: "Viet Nam"
     //   value: "VN"
     // year: "1930"
-    // fileBase64
+    // fileDocBase64
 
     const {
       firstName,
@@ -405,21 +408,42 @@ class KycForm extends Component {
       yearIssue, monthIssue, dayIssue,
       yearExpire, monthExpire, dayExpire,
       value,
-      fileBase64
+      fileDocBase64,
+      fileFaceBase64,
     } = this.state;
+
+    if (fileDocBase64 === "") {
+      Swal.fire({
+        type: 'info',
+        title: 'KYC Submission',
+        text: 'Please upload your document'
+      })
+
+      return
+    }
+
+    if (fileFaceBase64 === "") {
+      Swal.fire({
+        type: 'info',
+        title: 'KYC Submission',
+        text: 'Please upload your face image'
+      })
+
+      return
+    }
 
     const data = {
       firstName, lastName, email, 
       dob: `${yearDob}-${parseFloat(monthDob)+1}-${dayDob}`, 
       country: value,
-      fileBase64, docNum, 
+      fileDocBase64, fileFaceBase64, docNum, 
       issue: `${yearIssue}-${parseFloat(monthIssue)+1}-${dayIssue}`,
       expire: `${yearExpire}-${parseFloat(monthExpire)+1}-${dayExpire}`,
       docType: ''
       // docType: this.state.​valueDocType === 0 ? 'passport' : 'id_card'
     }
 
-    // const payload = buildPayloadSample(fileBase64)
+    // const payload = buildPayloadSample(fileDocBase64)
     const payload = buildPayload(data)
     const result = await doFetch(payload)
     if (result === true) {
@@ -437,14 +461,28 @@ class KycForm extends Component {
     }
   }
 
-  onFileDrop = (files) => {
+  onDropDoc = (files) => {
     if (files && files[0]) {
       const reader = new FileReader();
 
       reader.onload = (e) => {
         this.setState({
-          fileBase64: reader.result,
-          urlFile: e.target.result,
+          fileDocBase64: reader.result,
+          urlFileDoc: e.target.result,
+        });
+      };
+      reader.readAsDataURL(files[0]);
+    }
+  };
+
+  onDropFace = (files) => {
+    if (files && files[0]) {
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        this.setState({
+          fileFaceBase64: reader.result,
+          urlFileFace: e.target.result,
         });
       };
       reader.readAsDataURL(files[0]);
@@ -452,7 +490,7 @@ class KycForm extends Component {
   };
 
   render() {
-    const {urlFile} = this.state
+    const {urlFileDoc, urlFileFace} = this.state
     let docTypes = [];
     docTypes.push({ label: "Passport", value: 0 });
     docTypes.push({ label: "ID Card", value: 1 });
@@ -545,34 +583,54 @@ class KycForm extends Component {
                     <label className='wg-label'>Document Expiry Date</label>
                     {this.displayExpire()}
                   </Col>
-                  <Col md={4}>
-                    <div style={{paddingTop: '27px'}}>
-                      <ReactDropzone
-                      
-                        style={{position: 'relative', width: '200px', height: '200px', borderWidth: '2px', borderColor: '#f0f0f0', borderStyle: 'dashed', borderRadius: '5px', ariaDisabled: "false"}}
-
-                        accept="image/*"
-                        onDrop={this.onFileDrop}
-                      >
-                        {urlFile === "" ?
-                            "Drag & Drop Your Document"
-                          :
-                          <img
-                            src={urlFile}
-                            style={previewStyle}
-                          />
-                        }
-                      </ReactDropzone>
-                    </div>
-                  </Col>
-                  <Col md={2} className='float-left'>
-                    <div className='wg-label' style={{paddingTop: '27px'}}>
+                </Row>
+                <Row>
+                  <Col md={4} className='float-left'>
+                    <div className='wg-label' style={{paddingTop: '100px'}}>
                       <Button
                         onClick={this.handleSubmit}
                         variant='contained' size='lg' color="secondary"
                       >
                           Submit
                       </Button>
+                    </div>
+                  </Col>
+                  <Col md={4}>
+                    <div style={{paddingTop: '27px'}}>
+                      <label className='wg-label'>Document</label>
+                      <ReactDropzone
+                      
+                        style={{position: 'relative', width: '200px', height: '200px', borderWidth: '2px', borderColor: '#f0f0f0', borderStyle: 'dashed', borderRadius: '5px', ariaDisabled: "false"}}
+                        onDrop={this.onDropDoc}
+                      >
+                        {urlFileDoc === "" ?
+                            "Drag & Drop Your Document (JPG, JPEG, PNG, PDF with max 16MB)"
+                          :
+                          <img
+                            src={urlFileDoc}
+                            style={previewStyle}
+                          />
+                        }
+                      </ReactDropzone>
+                    </div>
+                  </Col>
+                  <Col md={4}>
+                    <div style={{paddingTop: '27px'}}>
+                      <label className='wg-label'>Face</label>
+                      <ReactDropzone
+                      
+                        style={{position: 'relative', width: '200px', height: '200px', borderWidth: '2px', borderColor: '#f0f0f0', borderStyle: 'dashed', borderRadius: '5px', ariaDisabled: "false"}}
+                        onDrop={this.onDropFace}
+                      >
+                        {urlFileFace === "" ?
+                            "Drag & Drop Your Face Image (JPG, JPEG, PNG with max 16MB)"
+                          :
+                          <img
+                            src={urlFileFace}
+                            style={previewStyle}
+                          />
+                        }
+                      </ReactDropzone>
                     </div>
                   </Col>
                 </Row>
