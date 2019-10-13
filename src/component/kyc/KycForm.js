@@ -24,7 +24,9 @@ class KycForm extends Component {
     email: '',
     docNum: '',
 
-    year: null, month: null, day: null,
+    yearDob: null, monthDob: null, dayDob: null,
+    yearIssue: null, monthIssue: null, dayIssue: null,
+    yearExpire: null, monthExpire: null, dayExpire: null,
 
     options: countryList().getData(),
     value: null,
@@ -63,14 +65,14 @@ class KycForm extends Component {
               // default is false
               // disabled={true}
               // mandatory
-              value={this.state.year}
+              value={this.state.yearDob}
               // mandatory
-              onChange={(year) => {
-                this.setState({ year });
-                console.log(year);
+              onChange={(yearDob) => {
+                this.setState({ yearDob });
+                console.log(yearDob);
               }}
-              id={'year'}
-              name={'year'}
+              id={'yearDob'}
+              name={'yearDob'}
               classes={'form-control wg-text-field'}
               optionClasses={'option classes'}
             />
@@ -87,21 +89,21 @@ class KycForm extends Component {
               // mandatory if end={} is given in YearPicker
               endYearGiven
               // mandatory
-              year={this.state.year}
+              year={this.state.yearDob}
               // default is false
               required={true}
               // default is false
               // disabled={true}
               // mandatory
-              value={this.state.month}
+              value={this.state.monthDob}
               // mandatory
-              onChange={(month) => {
+              onChange={(monthDob) => {
                 // month = Number(month) + 1
-                this.setState({ month });
-                console.log(month);
+                this.setState({ monthDob });
+                console.log(monthDob);
               }}
-              id={'month'}
-              name={'month'}
+              id={'monthDob'}
+              name={'monthDob'}
               classes={'form-control wg-text-field'}
               optionClasses={'option classes'}
             />
@@ -110,9 +112,9 @@ class KycForm extends Component {
             <DayPicker
               defaultValue={'Day'}
               // mandatory
-              year={this.state.year}
+              year={this.state.yearDob}
               // mandatory
-              month={this.state.month}
+              month={this.state.monthDob}
               // mandatory if end={} is given in YearPicker
               endYearGiven
               // default is false
@@ -120,14 +122,198 @@ class KycForm extends Component {
               // default is false
               // disabled={true}
               // mandatory
-              value={this.state.day}
+              value={this.state.dayDob}
               // mandatory
-              onChange={(day) => {
-                this.setState({ day });
-                console.log(day);
+              onChange={(dayDob) => {
+                this.setState({ dayDob });
+                console.log(dayDob);
               }}
-              id={'day'}
-              name={'day'}
+              id={'dayDob'}
+              name={'dayDob'}
+              classes={'form-control wg-text-field'}
+              optionClasses={'option classes'}
+            />
+          </Col>
+        </Row>
+			</div>
+		);
+  }
+
+  displayIssue = () => {
+    return (
+      <div>
+        <Row>
+          <Col md={4}>  
+            <YearPicker
+              defaultValue={'Year'}
+              // default is 1900
+              start={1930}
+              // default is current year
+              end={2004}
+              // default is ASCENDING
+              // reverse
+              // default is false
+              required={true}
+              // default is false
+              // disabled={true}
+              // mandatory
+              value={this.state.yearIssue}
+              // mandatory
+              onChange={(yearIssue) => {
+                this.setState({ yearIssue });
+                console.log(yearIssue);
+              }}
+              id={'yearIssue'}
+              name={'yearIssue'}
+              classes={'form-control wg-text-field'}
+              optionClasses={'option classes'}
+            />
+          </Col>
+          <Col md={4}>
+            <MonthPicker
+              defaultValue={'Month'}
+              // to get months as numbers
+              numeric
+              // default is full name
+              short
+              // default is Titlecase
+              caps
+              // mandatory if end={} is given in YearPicker
+              endYearGiven
+              // mandatory
+              year={this.state.yearIssue}
+              // default is false
+              required={true}
+              // default is false
+              // disabled={true}
+              // mandatory
+              value={this.state.monthIssue}
+              // mandatory
+              onChange={(monthIssue) => {
+                // month = Number(month) + 1
+                this.setState({ monthIssue });
+                console.log(monthIssue);
+              }}
+              id={'monthIssue'}
+              name={'monthIssue'}
+              classes={'form-control wg-text-field'}
+              optionClasses={'option classes'}
+            />
+          </Col>
+          <Col md={4}>
+            <DayPicker
+              defaultValue={'Day'}
+              // mandatory
+              year={this.state.yearIssue}
+              // mandatory
+              month={this.state.monthIssue}
+              // mandatory if end={} is given in YearPicker
+              endYearGiven
+              // default is false
+              required={true}
+              // default is false
+              // disabled={true}
+              // mandatory
+              value={this.state.dayIssue}
+              // mandatory
+              onChange={(dayIssue) => {
+                this.setState({ dayIssue });
+                console.log(dayIssue);
+              }}
+              id={'dayIssue'}
+              name={'dayIssue'}
+              classes={'form-control wg-text-field'}
+              optionClasses={'option classes'}
+            />
+          </Col>
+        </Row>
+			</div>
+		);
+  }
+
+  displayExpire = () => {
+    return (
+      <div>
+        <Row>
+          <Col md={4}>  
+            <YearPicker
+              defaultValue={'Year'}
+              // default is 1900
+              start={1930}
+              // default is current year
+              end={2004}
+              // default is ASCENDING
+              // reverse
+              // default is false
+              required={true}
+              // default is false
+              // disabled={true}
+              // mandatory
+              value={this.state.yearExpire}
+              // mandatory
+              onChange={(yearExpire) => {
+                this.setState({ yearExpire });
+                console.log(yearExpire);
+              }}
+              id={'yearExpire'}
+              name={'yearExpire'}
+              classes={'form-control wg-text-field'}
+              optionClasses={'option classes'}
+            />
+          </Col>
+          <Col md={4}>
+            <MonthPicker
+              defaultValue={'Month'}
+              // to get months as numbers
+              numeric
+              // default is full name
+              short
+              // default is Titlecase
+              caps
+              // mandatory if end={} is given in YearPicker
+              endYearGiven
+              // mandatory
+              year={this.state.yearExpire}
+              // default is false
+              required={true}
+              // default is false
+              // disabled={true}
+              // mandatory
+              value={this.state.monthExpire}
+              // mandatory
+              onChange={(monthExpire) => {
+                // month = Number(month) + 1
+                this.setState({ monthExpire });
+                console.log(monthExpire);
+              }}
+              id={'monthExpire'}
+              name={'monthExpire'}
+              classes={'form-control wg-text-field'}
+              optionClasses={'option classes'}
+            />
+          </Col>
+          <Col md={4}>
+            <DayPicker
+              defaultValue={'Day'}
+              // mandatory
+              year={this.state.yearExpire}
+              // mandatory
+              month={this.state.monthExpire}
+              // mandatory if end={} is given in YearPicker
+              endYearGiven
+              // default is false
+              required={true}
+              // default is false
+              // disabled={true}
+              // mandatory
+              value={this.state.dayExpire}
+              // mandatory
+              onChange={(dayExpire) => {
+                this.setState({ dayExpire });
+                console.log(dayExpire);
+              }}
+              id={'dayExpire'}
+              name={'dayExpire'}
               classes={'form-control wg-text-field'}
               optionClasses={'option classes'}
             />
@@ -313,7 +499,6 @@ class KycForm extends Component {
                     />
                   </Col>
                 </Row>
-
                 <Row>
                   <Col md={6}>
                     <label className='wg-label'>Document Type</label>
@@ -325,6 +510,16 @@ class KycForm extends Component {
                     />
                   </Col>
                   <Col md={6}>
+                    <label className='wg-label'>Document Issue Date</label>
+                    {this.displayIssue()}
+                  </Col>
+                </Row>
+                <Row style={{paddingTop: '20px'}}>
+                  <Col md={6}>
+                    <label className='wg-label'>Document Expiry Date</label>
+                    {this.displayExpire()}
+                  </Col>
+                  <Col md={4}>
                     <div style={{paddingTop: '27px'}}>
                       <ReactDropzone
                       
@@ -344,16 +539,15 @@ class KycForm extends Component {
                       </ReactDropzone>
                     </div>
                   </Col>
-                </Row>
-                
-                <Row style={{paddingTop: '20px'}}>
-                  <Col md={6} className='float-left'>
-                    <Button
-                      onClick={this.handleSubmit}
-                      variant='contained' size='lg' color="secondary"
-                    >
-                        Submit
-                    </Button>
+                  <Col md={2} className='float-left'>
+                    <div className='wg-label' style={{paddingTop: '27px'}}>
+                      <Button
+                        onClick={this.handleSubmit}
+                        variant='contained' size='lg' color="secondary"
+                      >
+                          Submit
+                      </Button>
+                    </div>
                   </Col>
                 </Row>
               </div>
