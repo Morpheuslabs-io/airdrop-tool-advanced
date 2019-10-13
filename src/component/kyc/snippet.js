@@ -13,7 +13,7 @@ import { sha256 } from 'js-sha256';
 
     const {
       firstName, lastName, email, dob, country, fileBase64,
-      docType, docNum
+      docType, docNum, issue, expire
     } = data
 
     let payload = {
@@ -208,33 +208,37 @@ import { sha256 } from 'js-sha256';
   }
 
   export function doFetch(payload) {
-    console.log('payload:', payload);
-    // var token = btoa("k9GsyCBYStdmWoGHa6i8Yp2JLTDwpkWMYZNIRZRJYIZK3qlpi31570863056:$2y$10$yY0MK0wJd10b9h4IS00SFO0nnsnNo96VvEQyVpch2o50n7Fg9G1Zu"); //BASIC AUTH TOKEN
-    
-    var token = btoa("k9GsyCBYStdmWoGHa6i8Yp2JLTDwpkWMYZNIRZRJYIZK3qlpi31570863056:$2y$10$yY0MK0wJd10b9h4IS00SFO0nnsnNo96VvEQyVpch2o50n7Fg9G1Zu"); //BASIC AUTH TOKEN
-  var responsesignature = null;
-  //Dispatch request via fetch API or with whatever else which best suits for you
-  fetch('https://shuftipro.com/api/',
-  {
-      method : 'post',
-      headers : {
-          'Accept'				: 'application/json',
-          'Content-Type'	: 'application/json',
-          'Authorization'	: 'Basic ' +token
-      },
-  body: JSON.stringify(payload)
-  })
-  .then(function(response) {
-      console.log(response);
-      responsesignature = response.headers.get('Signature');
-      return response.json();
-  }).then(function(data) {
-      if(validatesignature(data,responsesignature,'$2y$10$yY0MK0wJd10b9h4IS00SFO0nnsnNo96VvEQyVpch2o50n7Fg9G1Zu')){
-          console.log('signature validated',data)
-      }else{
-          console.log('signature not validated',data)
-      }
-  });
+    return new Promise((resolve, reject) => {
+      console.log('payload:', payload);
+      // var token = btoa("k9GsyCBYStdmWoGHa6i8Yp2JLTDwpkWMYZNIRZRJYIZK3qlpi31570863056:$2y$10$yY0MK0wJd10b9h4IS00SFO0nnsnNo96VvEQyVpch2o50n7Fg9G1Zu"); //BASIC AUTH TOKEN
+      
+      var token = btoa("k9GsyCBYStdmWoGHa6i8Yp2JLTDwpkWMYZNIRZRJYIZK3qlpi31570863056:$2y$10$yY0MK0wJd10b9h4IS00SFO0nnsnNo96VvEQyVpch2o50n7Fg9G1Zu"); //BASIC AUTH TOKEN
+      var responsesignature = null;
+      //Dispatch request via fetch API or with whatever else which best suits for you
+      fetch('https://shuftipro.com/api/',
+      {
+          method : 'post',
+          headers : {
+              'Accept'				: 'application/json',
+              'Content-Type'	: 'application/json',
+              'Authorization'	: 'Basic ' +token
+          },
+      body: JSON.stringify(payload)
+      })
+      .then(function(response) {
+          console.log('response:', response);
+          responsesignature = response.headers.get('Signature');
+          return response.json();
+      }).then(function(data) {
+          if(validatesignature(data,responsesignature,'$2y$10$yY0MK0wJd10b9h4IS00SFO0nnsnNo96VvEQyVpch2o50n7Fg9G1Zu')){
+              console.log('signature validated - data:',data)
+              resolve(true)
+          }else{
+              console.log('signature not validated - data:',data)
+              resolve(false)
+          }
+      });
+    });
   }
 
   //this method is used to validate the response signature

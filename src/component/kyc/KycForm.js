@@ -5,7 +5,7 @@ import IconButton from '@material-ui/core/IconButton';
 import PropTypes from 'prop-types';
 import Papa from 'papaparse';
 import Button2 from '@material-ui/core/Button';
-import swal from "sweetalert2";
+import Swal from "sweetalert2";
 import Spinner from 'react-spinkit';
 
 import { YearPicker, MonthPicker, DayPicker } from 'react-dropdown-date';
@@ -14,22 +14,23 @@ import countryList from 'react-select-country-list'
 import ReactDropzone from "react-dropzone";
 import "react-image-gallery/styles/css/image-gallery.css";
 import './snippet'
-import { buildPayloadSample, doFetch, doFetchTest } from './snippet';
+import { buildPayload, buildPayloadSample, doFetch, doFetchTest } from './snippet';
 
 class KycForm extends Component {
 
   state = {
-    firstName: '',
-    lastName: '',
-    email: '',
-    docNum: '',
+    firstName: 'Anna',
+    lastName: 'Kowalska',
+    email: 'midotrinh@gmail.com',
+    docNum: 'ZS0000177',
 
-    yearDob: null, monthDob: null, dayDob: null,
-    yearIssue: null, monthIssue: null, dayIssue: null,
-    yearExpire: null, monthExpire: null, dayExpire: null,
+    yearDob: '1972', monthDob: '3', dayDob: '30',
+    yearIssue: '2006', monthIssue: '6', dayIssue: '13',
+    yearExpire: '2016', monthExpire: '6', dayExpire: '13',
 
     options: countryList().getData(),
-    value: null,
+    value: 'PL',
+    label: 'Poland',
 
     valueDocType: 0,
     labelDocType: "Passport",
@@ -46,6 +47,14 @@ class KycForm extends Component {
   changeHandler = value => {
     this.setState({ value })
   }
+
+  changeHandlerCountry = selectedOption => {
+    console.log(selectedOption);
+    this.setState({
+        value: selectedOption.value,
+        label: selectedOption.label
+    });
+  };
 
   displayDOB = () => {
     return (
@@ -149,7 +158,7 @@ class KycForm extends Component {
               // default is 1900
               start={1930}
               // default is current year
-              end={2004}
+              // end={2004}
               // default is ASCENDING
               // reverse
               // default is false
@@ -241,7 +250,7 @@ class KycForm extends Component {
               // default is 1900
               start={1930}
               // default is current year
-              end={2004}
+              // end={2004}
               // default is ASCENDING
               // reverse
               // default is false
@@ -371,7 +380,7 @@ class KycForm extends Component {
     });
   };
 
-  handleSubmit = () => {
+  handleSubmit = async () => {
     // day: "2"
     // docNum: "123"
     // email: "midotrinh@gmail.com"
@@ -392,23 +401,40 @@ class KycForm extends Component {
       lastName,
       email,
       docNum,
-      year, month, day,
+      yearDob, monthDob, dayDob,
+      yearIssue, monthIssue, dayIssue,
+      yearExpire, monthExpire, dayExpire,
       value,
       fileBase64
     } = this.state;
 
-    // const data = {
-    //   firstName, lastName, email, 
-    //   dob: `${year}-${parseFloat(month)+1}-${day}`, 
-    //   country: value.label,
-    //   fileBase64, docNum, 
-    //   // docType: this.state.​valueDocType === 0 ? 'passport' : 'id_card'
-    // }
+    const data = {
+      firstName, lastName, email, 
+      dob: `${yearDob}-${parseFloat(monthDob)+1}-${dayDob}`, 
+      country: value,
+      fileBase64, docNum, 
+      issue: `${yearIssue}-${parseFloat(monthIssue)+1}-${dayIssue}`,
+      expire: `${yearExpire}-${parseFloat(monthExpire)+1}-${dayExpire}`,
+      docType: ''
+      // docType: this.state.​valueDocType === 0 ? 'passport' : 'id_card'
+    }
 
-    const payload = buildPayloadSample(fileBase64)
-    const result = doFetch(payload)
-    // const result = doFetchTest()
-
+    // const payload = buildPayloadSample(fileBase64)
+    const payload = buildPayload(data)
+    const result = await doFetch(payload)
+    if (result === true) {
+      Swal.fire({
+        type: 'success',
+        title: 'KYC Submission',
+        text: 'Received!'
+      })
+    } else {
+      Swal.fire({
+        type: 'error',
+        title: 'KYC Submission',
+        text: 'Failed!'
+      })
+    }
   }
 
   onFileDrop = (files) => {
@@ -494,8 +520,8 @@ class KycForm extends Component {
                     <label className='wg-label'>Country</label>
                     <Select
                       options={this.state.options}
-                      value={this.state.value}
-                      onChange={this.changeHandler}
+                      value={{value: this.state.value, label: this.state.label}}
+                      onChange={this.changeHandlerCountry}
                     />
                   </Col>
                 </Row>
