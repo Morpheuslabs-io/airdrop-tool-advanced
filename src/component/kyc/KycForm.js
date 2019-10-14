@@ -19,6 +19,8 @@ import { buildPayload, buildPayloadSample, doFetch, doFetchTest } from './snippe
 import docVerifyImg from '../../assets/img/document.webp.png'
 import faceVerifyImg from '../../assets/img/face.webp.png'
 
+import emailList from './email-list'
+
 class KycForm extends Component {
 
   state = {
@@ -336,10 +338,32 @@ class KycForm extends Component {
 		);
   }
 
+  isEmailAllowed = (email) => {
+    for (let i=0; i<emailList.length; i++) {
+      if (email.toLowerCase() === emailList[i].toLowerCase()) {
+        return true
+      }
+    }
+    return false
+  }
+
   handleChange = (name, value) => {
     this.setState({
       [name]: value,
     })
+  };
+
+  handleBlur = () => {
+
+    if (!this.isEmailAllowed(this.state.email)) {
+      Swal.fire({
+        type: 'error',
+        title: 'KYC submission aborted',
+        text: 'Email not whitelisted'
+      }).then(result => {
+        window.location.reload();
+      })
+    }
   };
 
   handleUploadCSV = event => {
@@ -410,6 +434,15 @@ class KycForm extends Component {
       fileDocBase64,
       fileFaceBase64,
     } = this.state;
+
+    if (email === "") {
+      Swal.fire({
+        type: 'info',
+        title: 'KYC Submission',
+        text: 'Please enter an email'
+      })
+      return
+    }
 
     if (fileDocBase64 === "") {
       Swal.fire({
@@ -545,7 +578,7 @@ class KycForm extends Component {
                   <Col sm={5}>
                     <InputField 
                       id='email' nameLabel='Email' type='text' 
-                      onChange={this.handleChange} value={this.state.email}
+                      onChange={this.handleChange} onBlur={this.handleBlur} value={this.state.email}
                           hasError={this.state.errorAddress}/>
                   </Col>
                   <Col sm={2}></Col>
