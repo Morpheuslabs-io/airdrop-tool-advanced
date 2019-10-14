@@ -519,16 +519,13 @@ class KycForm extends Component {
           </div>
           <div className='wg-content'>
                 <Row>
-                  <Col sm={5}>
+                  <Col sm={6}>
                     <InputField 
                       id='firstName' nameLabel='First Name' type='text' 
                       onChange={this.handleChange} value={this.state.firstName}
                           hasError={this.state.errorAddress}/>
                   </Col>
-                  <Col sm={2}>
-                    
-                  </Col>
-                  <Col sm={5}>
+                  <Col sm={6}>
                     <InputField 
                       id='lastName' nameLabel='Last Name' type='text' 
                       onChange={this.handleChange} value={this.state.lastName}
@@ -537,32 +534,26 @@ class KycForm extends Component {
                 </Row>
 
                 <Row>
-                  <Col sm={5}>
+                  <Col sm={6}>
                     <InputField 
                       id='email' nameLabel='Email' type='text' 
                       onChange={this.handleChange} value={this.state.email}
                           hasError={this.state.errorAddress}/>
                   </Col>
-                  <Col sm={2}>
-                    
-                  </Col>
-                  <Col sm={5}>
+                  <Col sm={6}>
                     <label className='wg-label'>Date of Birth</label>
                     {this.displayDOB()}
                   </Col>
                 </Row>
 
                 <Row>
-                  <Col sm={5}>
+                  <Col sm={6}>
                     <InputField 
                       id='docNum' nameLabel='Passport Number' type='text' 
                       onChange={this.handleChange} value={this.state.docNum}
                           hasError={this.state.errorAddress}/>
                   </Col>
-                  <Col sm={2}>
-                    
-                  </Col>
-                  <Col sm={5}>
+                  <Col sm={6}>
                     <label className='wg-label'>Country</label>
                     <Select
                       options={this.state.options}
@@ -572,14 +563,11 @@ class KycForm extends Component {
                   </Col>
                 </Row>
                 <Row>
-                  <Col sm={5}>
+                  <Col sm={6}>
                     <label className='wg-label'>Passport Issuance</label>
                     {this.displayIssue()}
                   </Col>
-                  <Col sm={2}>
-                    
-                  </Col>
-                  <Col sm={5}>
+                  <Col sm={6}>
                     <label className='wg-label'>Passport Expiry</label>
                     {this.displayExpire()}
                   </Col>
