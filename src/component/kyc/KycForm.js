@@ -455,19 +455,25 @@ class KycForm extends Component {
       spinnerShow: false
     })
 
-    if (result === null) {
-      Swal.fire({
-        type: 'error',
-        title: 'KYC Submission',
-        text: 'Signature not validated'
-      })
-    } else {
-      Swal.fire({
-        type: result.text === '' ? 'success' : 'error',
-        title: result.title,
-        text: result.text
-      })
-    }
+    // if (result === null) {
+    //   Swal.fire({
+    //     type: 'error',
+    //     title: 'KYC Submission',
+    //     text: 'Signature not validated'
+    //   })
+    // } else {
+    //   Swal.fire({
+    //     type: result.text === '' ? 'success' : 'error',
+    //     title: result.title,
+    //     text: result.text
+    //   })
+    // }
+
+    Swal.fire({
+      type: 'info',
+      title: 'Thank you',
+      text: 'KYC verification data submitted'
+    })
   }
 
   onDropDoc = (files) => {
