@@ -520,7 +520,7 @@ class KycForm extends Component {
       <div className='container step-widget'>
           <div className='widget-header'>
             <div>
-              <p className='title'>KYC Submission Tool</p>
+              <p className='title'>KYC Submission</p>
             </div>
           </div>
           <div className='wg-content'>
