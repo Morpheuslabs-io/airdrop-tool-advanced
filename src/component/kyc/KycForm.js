@@ -16,6 +16,9 @@ import "react-image-gallery/styles/css/image-gallery.css";
 import './snippet'
 import { buildPayload, buildPayloadSample, doFetch, doFetchTest } from './snippet';
 
+import docVerifyImg from '../../assets/img/document.webp.png'
+import faceVerifyImg from '../../assets/img/face.webp.png'
+
 class KycForm extends Component {
 
   state = {
@@ -581,6 +584,29 @@ class KycForm extends Component {
                   </Col>
                 </Row>
                 <Row>
+                  <Col sm={4}>
+                    <div style={{paddingTop: '27px'}}>
+                      <img 
+                        src={docVerifyImg} className='wg-label'
+                        width='200px'
+                      />
+                      <ReactDropzone
+                      
+                        style={{position: 'relative', width: '200px', height: '200px', borderWidth: '2px', borderColor: '#f0f0f0', borderStyle: 'dashed', borderRadius: '5px', ariaDisabled: "false"}}
+                        onDrop={this.onDropDoc}
+                      >
+                        {urlFileDoc === "" ?
+                            "Drag & Drop Your Passport (JPG, JPEG, PNG, PDF with max 16MB)"
+                          :
+                          <img
+                            src={urlFileDoc}
+                            style={previewStyle}
+                          />
+                        }
+                      </ReactDropzone>
+                    </div>
+                  </Col>
+                  <Col sm={1}/>
                   <Col sm={2} className='float-left'>
                     <div className='wg-label' style={{paddingTop: '100px'}}>
                       <Button
@@ -600,32 +626,13 @@ class KycForm extends Component {
                       </Button>
                     </div>
                   </Col>
-                  <Col sm={1}>
-                  </Col>
+                  <Col sm={1}/>
                   <Col sm={4}>
                     <div style={{paddingTop: '27px'}}>
-                      <label className='wg-label'>Passport</label>
-                      <ReactDropzone
-                      
-                        style={{position: 'relative', width: '200px', height: '200px', borderWidth: '2px', borderColor: '#f0f0f0', borderStyle: 'dashed', borderRadius: '5px', ariaDisabled: "false"}}
-                        onDrop={this.onDropDoc}
-                      >
-                        {urlFileDoc === "" ?
-                            "Drag & Drop Your Passport (JPG, JPEG, PNG, PDF with max 16MB)"
-                          :
-                          <img
-                            src={urlFileDoc}
-                            style={previewStyle}
-                          />
-                        }
-                      </ReactDropzone>
-                    </div>
-                  </Col>
-                  <Col sm={1}>
-                  </Col>
-                  <Col sm={4}>
-                    <div style={{paddingTop: '27px'}}>
-                      <label className='wg-label'>Face</label>
+                      <img 
+                        src={faceVerifyImg} className='wg-label'
+                        width='200px'
+                      />
                       <ReactDropzone
                       
                         style={{position: 'relative', width: '200px', height: '200px', borderWidth: '2px', borderColor: '#f0f0f0', borderStyle: 'dashed', borderRadius: '5px', ariaDisabled: "false"}}
