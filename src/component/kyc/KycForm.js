@@ -19,18 +19,18 @@ import { buildPayload, buildPayloadSample, doFetch, doFetchTest } from './snippe
 class KycForm extends Component {
 
   state = {
-    firstName: 'Anna',
-    lastName: 'Kowalska',
-    email: 'midotrinh@gmail.com',
-    docNum: 'ZS0000177',
+    firstName: '',
+    lastName: '',
+    email: '',
+    docNum: '',
 
-    yearDob: '1972', monthDob: '3', dayDob: '30',
-    yearIssue: '2006', monthIssue: '6', dayIssue: '13',
-    yearExpire: '2016', monthExpire: '6', dayExpire: '13',
+    yearDob: '', monthDob: '', dayDob: '',
+    yearIssue: '', monthIssue: '', dayIssue: '',
+    yearExpire: '', monthExpire: '', dayExpire: '',
 
     options: countryList().getData(),
-    value: 'PL',
-    label: 'Poland',
+    value: '',
+    label: '',
 
     valueDocType: 0,
     labelDocType: "Passport",
@@ -63,7 +63,7 @@ class KycForm extends Component {
     return (
       <div>
         <Row>
-          <Col md={4}>  
+          <Col sm={4}>
             <YearPicker
               defaultValue={'Year'}
               // default is 1900
@@ -89,7 +89,7 @@ class KycForm extends Component {
               optionClasses={'option classes'}
             />
           </Col>
-          <Col md={4}>
+          <Col sm={4}>
             <MonthPicker
               defaultValue={'Month'}
               // to get months as numbers
@@ -120,7 +120,7 @@ class KycForm extends Component {
               optionClasses={'option classes'}
             />
           </Col>
-          <Col md={4}>
+          <Col sm={4}>
             <DayPicker
               defaultValue={'Day'}
               // mandatory
@@ -155,7 +155,7 @@ class KycForm extends Component {
     return (
       <div>
         <Row>
-          <Col md={4}>  
+          <Col sm={4}>  
             <YearPicker
               defaultValue={'Year'}
               // default is 1900
@@ -181,7 +181,7 @@ class KycForm extends Component {
               optionClasses={'option classes'}
             />
           </Col>
-          <Col md={4}>
+          <Col sm={4}>
             <MonthPicker
               defaultValue={'Month'}
               // to get months as numbers
@@ -212,7 +212,7 @@ class KycForm extends Component {
               optionClasses={'option classes'}
             />
           </Col>
-          <Col md={4}>
+          <Col sm={4}>
             <DayPicker
               defaultValue={'Day'}
               // mandatory
@@ -247,7 +247,7 @@ class KycForm extends Component {
     return (
       <div>
         <Row>
-          <Col md={4}>  
+          <Col sm={4}>  
             <YearPicker
               defaultValue={'Year'}
               // default is 1900
@@ -273,7 +273,7 @@ class KycForm extends Component {
               optionClasses={'option classes'}
             />
           </Col>
-          <Col md={4}>
+          <Col sm={4}>
             <MonthPicker
               defaultValue={'Month'}
               // to get months as numbers
@@ -304,7 +304,7 @@ class KycForm extends Component {
               optionClasses={'option classes'}
             />
           </Col>
-          <Col md={4}>
+          <Col sm={4}>
             <DayPicker
               defaultValue={'Day'}
               // mandatory
@@ -511,7 +511,7 @@ class KycForm extends Component {
     };
 
     return (
-      <div className='container step-widget widget-1'>
+      <div className='container step-widget'>
           <div className='widget-header'>
             <div>
               <p className='title'>KYC Submission Tool</p>
@@ -519,13 +519,16 @@ class KycForm extends Component {
           </div>
           <div className='wg-content'>
                 <Row>
-                  <Col md={6}>
+                  <Col sm={5}>
                     <InputField 
                       id='firstName' nameLabel='First Name' type='text' 
                       onChange={this.handleChange} value={this.state.firstName}
                           hasError={this.state.errorAddress}/>
                   </Col>
-                  <Col md={6}>
+                  <Col sm={2}>
+                    
+                  </Col>
+                  <Col sm={5}>
                     <InputField 
                       id='lastName' nameLabel='Last Name' type='text' 
                       onChange={this.handleChange} value={this.state.lastName}
@@ -534,26 +537,32 @@ class KycForm extends Component {
                 </Row>
 
                 <Row>
-                  <Col md={6}>
+                  <Col sm={5}>
                     <InputField 
                       id='email' nameLabel='Email' type='text' 
                       onChange={this.handleChange} value={this.state.email}
                           hasError={this.state.errorAddress}/>
                   </Col>
-                  <Col md={6}>
+                  <Col sm={2}>
+                    
+                  </Col>
+                  <Col sm={5}>
                     <label className='wg-label'>Date of Birth</label>
                     {this.displayDOB()}
                   </Col>
                 </Row>
 
                 <Row>
-                  <Col md={6}>
+                  <Col sm={5}>
                     <InputField 
-                      id='docNum' nameLabel='Document Number' type='text' 
+                      id='docNum' nameLabel='Passport Number' type='text' 
                       onChange={this.handleChange} value={this.state.docNum}
                           hasError={this.state.errorAddress}/>
                   </Col>
-                  <Col md={6}>
+                  <Col sm={2}>
+                    
+                  </Col>
+                  <Col sm={5}>
                     <label className='wg-label'>Country</label>
                     <Select
                       options={this.state.options}
@@ -563,28 +572,20 @@ class KycForm extends Component {
                   </Col>
                 </Row>
                 <Row>
-                  <Col md={6}>
-                    <label className='wg-label'>Document Type</label>
-                    <Select
-                      value={docTypes[this.state.valueDocType]}
-                      onChange={this.handleChangeSelectDocType}
-                      options={docTypes}
-                      placeholder=""
-                    />
-                  </Col>
-                  <Col md={6}>
-                    <label className='wg-label'>Document Issue Date</label>
+                  <Col sm={5}>
+                    <label className='wg-label'>Passport Issuance</label>
                     {this.displayIssue()}
                   </Col>
-                </Row>
-                <Row style={{paddingTop: '20px'}}>
-                  <Col md={6}>
-                    <label className='wg-label'>Document Expiry Date</label>
+                  <Col sm={2}>
+                    
+                  </Col>
+                  <Col sm={5}>
+                    <label className='wg-label'>Passport Expiry</label>
                     {this.displayExpire()}
                   </Col>
                 </Row>
                 <Row>
-                  <Col md={4} className='float-left'>
+                  <Col sm={2} className='float-left'>
                     <div className='wg-label' style={{paddingTop: '100px'}}>
                       <Button
                         onClick={this.handleSubmit}
@@ -603,16 +604,18 @@ class KycForm extends Component {
                       </Button>
                     </div>
                   </Col>
-                  <Col md={4}>
+                  <Col sm={1}>
+                  </Col>
+                  <Col sm={4}>
                     <div style={{paddingTop: '27px'}}>
-                      <label className='wg-label'>Document</label>
+                      <label className='wg-label'>Passport</label>
                       <ReactDropzone
                       
                         style={{position: 'relative', width: '200px', height: '200px', borderWidth: '2px', borderColor: '#f0f0f0', borderStyle: 'dashed', borderRadius: '5px', ariaDisabled: "false"}}
                         onDrop={this.onDropDoc}
                       >
                         {urlFileDoc === "" ?
-                            "Drag & Drop Your Document (JPG, JPEG, PNG, PDF with max 16MB)"
+                            "Drag & Drop Your Passport (JPG, JPEG, PNG, PDF with max 16MB)"
                           :
                           <img
                             src={urlFileDoc}
@@ -622,7 +625,9 @@ class KycForm extends Component {
                       </ReactDropzone>
                     </div>
                   </Col>
-                  <Col md={4}>
+                  <Col sm={1}>
+                  </Col>
+                  <Col sm={4}>
                     <div style={{paddingTop: '27px'}}>
                       <label className='wg-label'>Face</label>
                       <ReactDropzone
