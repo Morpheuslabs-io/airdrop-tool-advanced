@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Row, Col, Button, ButtonGroup} from 'reactstrap';
+import {Row, Col, Button, Modal, ModalBody, ModalHeader} from 'reactstrap';
 import InputField from '../../util/InputField';
 import IconButton from '@material-ui/core/IconButton';
 import PropTypes from 'prop-types';
@@ -42,9 +42,7 @@ class KycForm extends Component {
     fileFaceBase64: "",
 
     spinnerShow: false,
-
     showModal: false,
-    isProcessing: false
   };
 
   changeHandler = value => {
@@ -364,9 +362,7 @@ class KycForm extends Component {
   handleToggleModal = () => {
     const { showModal } = this.state
     this.setState({
-      showModal: !showModal,
-      resourceHandleErr: false,
-      isProcessing: false
+      showModal: !showModal
     })
   }
 
@@ -433,7 +429,8 @@ class KycForm extends Component {
     }
 
     this.setState({
-      spinnerShow: true
+      spinnerShow: true,
+      showModal: true
     })
 
     const data = {
@@ -452,7 +449,8 @@ class KycForm extends Component {
     const result = await doFetch(payload)
 
     this.setState({
-      spinnerShow: false
+      spinnerShow: false,
+      showModal: false
     })
 
     // if (result === null) {
@@ -642,7 +640,20 @@ class KycForm extends Component {
                   </Col>
                 </Row>
               </div>
-        </div>
+          <Modal
+            size='sm'
+            isOpen={this.state.showModal}
+            // toggle={this.handleToggleModal}
+          >
+            <ModalHeader>
+              <div className='fs-16 clr-base tc'>KYC Submission Process</div>
+            </ModalHeader>
+            <ModalBody>
+              <p>It may take a couple of minutes.</p>
+              <p>Please do not reload or close the page.</p>
+            </ModalBody>
+          </Modal>
+      </div>
     );
   }
 }
