@@ -1,13 +1,11 @@
 import React, {Component} from 'react';
 import {Row, Col, Button, Modal, ModalBody, ModalHeader} from 'reactstrap';
 import InputField from '../../util/InputField';
-import IconButton from '@material-ui/core/IconButton';
 import PropTypes from 'prop-types';
 import Papa from 'papaparse';
-import Button2 from '@material-ui/core/Button';
 import Swal from "sweetalert2";
 import Spinner from 'react-spinkit';
-
+import {isMobile} from 'react-device-detect';
 import { YearPicker, MonthPicker, DayPicker } from 'react-dropdown-date';
 import Select from 'react-select'
 import countryList from 'react-select-country-list'
@@ -587,7 +585,9 @@ class KycForm extends Component {
                     {this.displayDOB()}
                   </Col>
                 </Row>
-
+                {
+                  isMobile && <br/>
+                }
                 <Row>
                   <Col sm={5}>
                     <InputField 
@@ -605,84 +605,180 @@ class KycForm extends Component {
                     />
                   </Col>
                 </Row>
-                <Row>
-                  <Col sm={5}>
-                    <label className='wg-label'>Passport Issuance</label>
-                    {this.displayIssue()}
-                  </Col>
-                  <Col sm={2}></Col>
-                  <Col sm={5}>
-                    <label className='wg-label'>Passport Expiry</label>
-                    {this.displayExpire()}
-                  </Col>
-                </Row>
-                <Row>
-                  <Col sm={4}>
-                    <div style={{paddingTop: '27px'}}>
-                      <img 
-                        src={docVerifyImg} className='wg-label'
-                        width='200px'
-                      />
-                      <ReactDropzone
-                      
-                        style={{position: 'relative', width: '200px', height: '200px', borderWidth: '2px', borderColor: '#f0f0f0', borderStyle: 'dashed', borderRadius: '5px', ariaDisabled: "false"}}
-                        onDrop={this.onDropDoc}
-                      >
-                        {urlFileDoc === "" ?
-                            "Drag & Drop Your Passport (JPG, JPEG, PNG, PDF with max 16MB)"
-                          :
-                          <img
-                            src={urlFileDoc}
-                            style={previewStyle}
-                          />
-                        }
-                      </ReactDropzone>
-                    </div>
-                  </Col>
-                  <Col sm={1}/>
-                  <Col sm={2} className='float-left'>
-                    <div className='wg-label' style={{paddingTop: '100px'}}>
-                      <Button
-                        onClick={this.handleSubmit}
-                        variant='contained' size='lg' color="secondary"
-                      >
-                        {
-                          this.state.spinnerShow ?
-                            <Spinner 
-                              name='three-bounce' color='#00B1EF'
-                              noFadeIn
-                            />
-                            :
-                            'Submit'
-                        }  
+                {
+                  isMobile && <br/>
+                }
+                { isMobile ?
+                    <>
+                    <Row>
+                      <Col sm={5}>
+                        <label className='wg-label'>Passport Issuance</label>
+                        {this.displayIssue()}
+                      </Col>
+                    </Row>
+                    <br />
+                    <Row>
+                      <Col sm={5}>
+                        <label className='wg-label'>Passport Expiry</label>
+                        {this.displayExpire()}
+                      </Col>
+                    </Row>
+                    </>
+                    : 
+                    <Row>
+                      <Col sm={5}>
+                        <label className='wg-label'>Passport Issuance</label>
+                        {this.displayIssue()}
+                      </Col>
+                      <Col sm={2}></Col>
+                      <Col sm={5}>
+                        <label className='wg-label'>Passport Expiry</label>
+                        {this.displayExpire()}
+                      </Col>
+                    </Row>
+                }
+                { isMobile ? 
+                  <>
+                  <Row>
+                    <Col sm={4}>
+                      <div style={{paddingTop: '27px'}}>
+                        <img 
+                          src={docVerifyImg} className='wg-label'
+                          width='200px'
+                        />
+                        <ReactDropzone
                         
-                      </Button>
-                    </div>
-                  </Col>
-                  <Col sm={1}/>
-                  <Col sm={4}>
-                    <div style={{paddingTop: '27px'}}>
-                      <img 
-                        src={faceVerifyImg} className='wg-label'
-                        width='200px'
-                      />
-                      <ReactDropzone
-                      
-                        style={{position: 'relative', width: '200px', height: '200px', borderWidth: '2px', borderColor: '#f0f0f0', borderStyle: 'dashed', borderRadius: '5px', ariaDisabled: "false"}}
-                        onDrop={this.onDropFace}
-                      >
-                        {urlFileFace === "" ?
-                            "Drag & Drop Your Face Image (JPG, JPEG, PNG with max 16MB)"
-                          :
-                          <img
-                            src={urlFileFace}
-                            style={previewStyle}
-                          />
-                        }
-                      </ReactDropzone>
-                    </div>
-                  </Col>
-                </Row>
+                          style={{position: 'relative', width: '200px', height: '200px', borderWidth: '2px', borderColor: '#f0f0f0', borderStyle: 'dashed', borderRadius: '5px', ariaDisabled: "false"}}
+                          onDrop={this.onDropDoc}
+                        >
+                          {urlFileDoc === "" ?
+                              "Drag & Drop Your Passport (JPG, JPEG, PNG, PDF with max 16MB)"
+                            :
+                            <img
+                              src={urlFileDoc}
+                              style={previewStyle}
+                            />
+                          }
+                        </ReactDropzone>
+                      </div>
+                    </Col>
+                  </Row>
+                  
+                  <Row>
+                    <Col sm={4}>
+                      <div style={{paddingTop: '27px'}}>
+                        <img 
+                          src={faceVerifyImg} className='wg-label'
+                          width='200px'
+                        />
+                        <ReactDropzone
+                        
+                          style={{position: 'relative', width: '200px', height: '200px', borderWidth: '2px', borderColor: '#f0f0f0', borderStyle: 'dashed', borderRadius: '5px', ariaDisabled: "false"}}
+                          onDrop={this.onDropFace}
+                        >
+                          {urlFileFace === "" ?
+                              "Drag & Drop Your Face Image (JPG, JPEG, PNG with max 16MB)"
+                            :
+                            <img
+                              src={urlFileFace}
+                              style={previewStyle}
+                            />
+                          }
+                        </ReactDropzone>
+                      </div>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col sm={2} className='float-left'>
+                      <div className='wg-label' style={{paddingTop: '30px'}}>
+                        <Button
+                          onClick={this.handleSubmit}
+                          variant='contained' size='lg' color="secondary"
+                        >
+                          {
+                            this.state.spinnerShow ?
+                              <Spinner 
+                                name='three-bounce' color='#00B1EF'
+                                noFadeIn
+                              />
+                              :
+                              'Submit'
+                          }  
+                          
+                        </Button>
+                      </div>
+                    </Col>
+                  </Row>
+                  </>
+                  :
+                  <Row>
+                    <Col sm={4}>
+                      <div style={{paddingTop: '27px'}}>
+                        <img 
+                          src={docVerifyImg} className='wg-label'
+                          width='200px'
+                        />
+                        <ReactDropzone
+                        
+                          style={{position: 'relative', width: '200px', height: '200px', borderWidth: '2px', borderColor: '#f0f0f0', borderStyle: 'dashed', borderRadius: '5px', ariaDisabled: "false"}}
+                          onDrop={this.onDropDoc}
+                        >
+                          {urlFileDoc === "" ?
+                              "Drag & Drop Your Passport (JPG, JPEG, PNG, PDF with max 16MB)"
+                            :
+                            <img
+                              src={urlFileDoc}
+                              style={previewStyle}
+                            />
+                          }
+                        </ReactDropzone>
+                      </div>
+                    </Col>
+                    <Col sm={1}/>
+                    <Col sm={2} className='float-left'>
+                      <div className='wg-label' style={{paddingTop: '100px'}}>
+                        <Button
+                          onClick={this.handleSubmit}
+                          variant='contained' size='lg' color="secondary"
+                        >
+                          {
+                            this.state.spinnerShow ?
+                              <Spinner 
+                                name='three-bounce' color='#00B1EF'
+                                noFadeIn
+                              />
+                              :
+                              'Submit'
+                          }  
+                          
+                        </Button>
+                      </div>
+                    </Col>
+                    <Col sm={1}/>
+                    <Col sm={4}>
+                      <div style={{paddingTop: '27px'}}>
+                        <img 
+                          src={faceVerifyImg} className='wg-label'
+                          width='200px'
+                        />
+                        <ReactDropzone
+                        
+                          style={{position: 'relative', width: '200px', height: '200px', borderWidth: '2px', borderColor: '#f0f0f0', borderStyle: 'dashed', borderRadius: '5px', ariaDisabled: "false"}}
+                          onDrop={this.onDropFace}
+                        >
+                          {urlFileFace === "" ?
+                              "Drag & Drop Your Face Image (JPG, JPEG, PNG with max 16MB)"
+                            :
+                            <img
+                              src={urlFileFace}
+                              style={previewStyle}
+                            />
+                          }
+                        </ReactDropzone>
+                      </div>
+                    </Col>
+                  </Row>
+                }
               </div>
           <Modal
             size='sm'
