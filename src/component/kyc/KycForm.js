@@ -356,8 +356,8 @@ class KycForm extends Component {
     if (!this.isEmailAllowed(this.state.email)) {
       Swal.fire({
         type: 'error',
-        title: 'KYC submission aborted',
-        text: 'Email not whitelisted'
+        title: 'KYC submission denied',
+        text: 'Email address is not given access'
       }).then(result => {
         window.location.reload();
       })
