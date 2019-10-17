@@ -177,46 +177,14 @@ import { sha256 } from 'js-sha256';
     })
   }
 
-  export function doFetchNotWork(payload) {
-    console.log('payload:', payload);
-    // var token = btoa("k9GsyCBYStdmWoGHa6i8Yp2JLTDwpkWMYZNIRZRJYIZK3qlpi31570863056:$2y$10$yY0MK0wJd10b9h4IS00SFO0nnsnNo96VvEQyVpch2o50n7Fg9G1Zu"); //BASIC AUTH TOKEN
-    
-    var token = btoa("k9GsyCBYStdmWoGHa6i8Yp2JLTDwpkWMYZNIRZRJYIZK3qlpi31570863056:$2y$10$yY0MK0wJd10b9h4IS00SFO0nnsnNo96VvEQyVpch2o50n7Fg9G1Zu"); //BASIC AUTH TOKEN
-    
-    console.log('token:', token);
-		var responsesignature = null;
-		//Dispatch request via fetch API or with whatever else which best suits for you
-		fetch('https://shuftipro.com/api/',
-		{
-				method : 'post',
-				headers : {
-						'Accept'				: 'application/json',
-						'Content-Type'	: 'application/json',
-						'Authorization'	: 'Basic ' +token
-				},
-		    body: JSON.stringify(payload)
-		})
-		.then(function(response) {
-        console.log('response:', response);
-				responsesignature = response.headers.get('Signature');
-				return response.json();
-		}).then(function(data) {
-        console.log('data:', data);
-        console.log('responsesignature:', responsesignature);
-				if(validatesignature(data,responsesignature,'$2y$10$yY0MK0wJd10b9h4IS00SFO0nnsnNo96VvEQyVpch2o50n7Fg9G1Zu')){
-						console.log('signature validated',data)
-				}else{
-						console.log('signature not validated',data)
-				}
-		});
-  }
-
   export function doFetch(payload) {
     return new Promise((resolve, reject) => {
       console.log('payload:', payload);
-      // var token = btoa("k9GsyCBYStdmWoGHa6i8Yp2JLTDwpkWMYZNIRZRJYIZK3qlpi31570863056:$2y$10$yY0MK0wJd10b9h4IS00SFO0nnsnNo96VvEQyVpch2o50n7Fg9G1Zu"); //BASIC AUTH TOKEN
       
-      var token = btoa("k9GsyCBYStdmWoGHa6i8Yp2JLTDwpkWMYZNIRZRJYIZK3qlpi31570863056:$2y$10$yY0MK0wJd10b9h4IS00SFO0nnsnNo96VvEQyVpch2o50n7Fg9G1Zu"); //BASIC AUTH TOKEN
+      // var token = btoa("k9GsyCBYStdmWoGHa6i8Yp2JLTDwpkWMYZNIRZRJYIZK3qlpi31570863056:$2y$10$yY0MK0wJd10b9h4IS00SFO0nnsnNo96VvEQyVpch2o50n7Fg9G1Zu"); //BASIC AUTH TOKEN
+
+      var token = btoa("GvXnRQliVTnvFlJ1eRtsRsZSSQBvoRqiJruTut8grEZTJFQojN1569493654:$2y$10$kdLlHoSudzzfy3n853xrZeJ1/.z0KI4keqh0xEjXc3noo/4svLXvS"); //BASIC AUTH TOKEN
+      
       var responsesignature = null;
       //Dispatch request via fetch API or with whatever else which best suits for you
       fetch('https://shuftipro.com/api/',
@@ -234,7 +202,7 @@ import { sha256 } from 'js-sha256';
           responsesignature = response.headers.get('Signature');
           return response.json();
       }).then(function(data) {
-          if(validatesignature(data,responsesignature,'$2y$10$yY0MK0wJd10b9h4IS00SFO0nnsnNo96VvEQyVpch2o50n7Fg9G1Zu')){
+          if(validatesignature(data,responsesignature,'$2y$10$kdLlHoSudzzfy3n853xrZeJ1/.z0KI4keqh0xEjXc3noo/4svLXvS')){
               console.log('signature validated - data:',data)
               resolve({title: data.event, text: data.declined_reason || ''})
           }else{
