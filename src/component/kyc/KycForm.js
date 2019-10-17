@@ -12,7 +12,7 @@ import countryList from 'react-select-country-list'
 import ReactDropzone from "react-dropzone";
 import "react-image-gallery/styles/css/image-gallery.css";
 import './snippet'
-import { buildPayload, doFetch } from './snippet';
+import { buildPayload, doFetch, getCustomerList } from './snippet';
 
 import docVerifyImg from '../../assets/img/document.webp.png'
 import faceVerifyImg from '../../assets/img/face.webp.png'
@@ -418,6 +418,8 @@ class KycForm extends Component {
       fileDocBase64,
       fileFaceBase64,
     } = this.state;
+
+    await getCustomerList();
 
     if (email === "") {
       Swal.fire({

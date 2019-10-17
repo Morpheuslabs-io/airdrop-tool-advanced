@@ -145,6 +145,8 @@ import { sha256 } from 'js-sha256';
       
       const {token, signature} = getTokenAndSignature()
 
+      console.log('getCustomerList')
+
       var responsesignature = null;
       //Dispatch request via fetch API or with whatever else which best suits for you
       fetch('https://shuftipro.com/backoffice/customers',
