@@ -34,7 +34,7 @@ class KycContainer extends Component {
         <div className='page-content'>
           <div className='page-wrapper d-flex flex-column'>
             <div className='step-content'>
-              <div className='container step-widget pt-0'>
+              <div className='container step-widget pt-0' style={{overflowX: 'hidden'}}>
                 <KycForm />
               </div>
             </div>
