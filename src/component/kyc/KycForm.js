@@ -12,7 +12,7 @@ import countryList from 'react-select-country-list'
 import ReactDropzone from "react-dropzone";
 import "react-image-gallery/styles/css/image-gallery.css";
 import './snippet'
-import { buildPayload, buildPayloadSample, doFetch, doFetchTest } from './snippet';
+import { buildPayload, doFetch } from './snippet';
 
 import docVerifyImg from '../../assets/img/document.webp.png'
 import faceVerifyImg from '../../assets/img/face.webp.png'
@@ -405,20 +405,6 @@ class KycForm extends Component {
   };
 
   handleSubmit = async () => {
-    // day: "2"
-    // docNum: "123"
-    // email: "midotrinh@gmail.com"
-    // firstName: "Mila"
-    // isProcessing: false
-    // labelDocType: "Passport"
-    // ​valueDocType: 0,
-    // lastName: "Trinh"
-    // month: "4"
-    // value: {…}
-    //   label: "Viet Nam"
-    //   value: "VN"
-    // year: "1930"
-    // fileDocBase64
 
     const {
       firstName,
