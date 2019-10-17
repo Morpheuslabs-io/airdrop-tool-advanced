@@ -50,10 +50,10 @@ import { sha256 } from 'js-sha256';
         fuzzy_match	 : '1'
       },
       proof             : fileDocBase64,
-      dob								: dob,
-      document_number	  : docNum,
+      // dob								: dob,
+      // document_number	  : docNum,
       expiry_date				: expire,
-      issue_date				: issue,
+      // issue_date				: issue,
       supported_types		: ['id_card','passport']
     }
     //background check/AML verification with OCR
