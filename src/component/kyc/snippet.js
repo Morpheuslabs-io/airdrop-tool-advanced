@@ -74,20 +74,7 @@ import { sha256 } from 'js-sha256';
     return new Promise((resolve, reject) => {
       console.log('payload:', payload);
       
-      // Mido test
-      var tokenMido = btoa("k9GsyCBYStdmWoGHa6i8Yp2JLTDwpkWMYZNIRZRJYIZK3qlpi31570863056:$2y$10$yY0MK0wJd10b9h4IS00SFO0nnsnNo96VvEQyVpch2o50n7Fg9G1Zu"); //BASIC AUTH TOKEN
-      var signatureMido = '$2y$10$yY0MK0wJd10b9h4IS00SFO0nnsnNo96VvEQyVpch2o50n7Fg9G1Zu';
-
-      // Company test
-      var tokenCompanyTest = btoa("GvXnRQliVTnvFlJ1eRtsRsZSSQBvoRqiJruTut8grEZTJFQojN1569493654:$2y$10$kdLlHoSudzzfy3n853xrZeJ1/.z0KI4keqh0xEjXc3noo/4svLXvS"); //BASIC AUTH TOKEN
-      var signatureCompanyTest = '$2y$10$kdLlHoSudzzfy3n853xrZeJ1/.z0KI4keqh0xEjXc3noo/4svLXvS';
-
-      // Company production
-      var tokenCompanyProd = btoa("gfSKbmdvAqWtqkeX8PkkNUuLQqqr8D5nhvCvSSfXAu0ObiAyCe1569554062:$2y$10$I4vRzbe3bEYpLWHoWzrE4OWFHYdfFTr4eFz.eIz.5kyrnXAwtvOyW"); //BASIC AUTH TOKEN
-      var signatureCompanyProd = '$2y$10$I4vRzbe3bEYpLWHoWzrE4OWFHYdfFTr4eFz.eIz.5kyrnXAwtvOyW';
-
-      var token = tokenCompanyProd
-      var signature = signatureCompanyProd
+      const {token, signature} = getTokenAndSignature()
 
       var responsesignature = null;
       //Dispatch request via fetch API or with whatever else which best suits for you
@@ -117,6 +104,25 @@ import { sha256 } from 'js-sha256';
     });
   }
 
+  function getTokenAndSignature() {
+    // Mido test
+    var tokenMido = btoa("k9GsyCBYStdmWoGHa6i8Yp2JLTDwpkWMYZNIRZRJYIZK3qlpi31570863056:$2y$10$yY0MK0wJd10b9h4IS00SFO0nnsnNo96VvEQyVpch2o50n7Fg9G1Zu"); //BASIC AUTH TOKEN
+    var signatureMido = '$2y$10$yY0MK0wJd10b9h4IS00SFO0nnsnNo96VvEQyVpch2o50n7Fg9G1Zu';
+
+    // Company test
+    var tokenCompanyTest = btoa("GvXnRQliVTnvFlJ1eRtsRsZSSQBvoRqiJruTut8grEZTJFQojN1569493654:$2y$10$kdLlHoSudzzfy3n853xrZeJ1/.z0KI4keqh0xEjXc3noo/4svLXvS"); //BASIC AUTH TOKEN
+    var signatureCompanyTest = '$2y$10$kdLlHoSudzzfy3n853xrZeJ1/.z0KI4keqh0xEjXc3noo/4svLXvS';
+
+    // Company production
+    var tokenCompanyProd = btoa("gfSKbmdvAqWtqkeX8PkkNUuLQqqr8D5nhvCvSSfXAu0ObiAyCe1569554062:$2y$10$I4vRzbe3bEYpLWHoWzrE4OWFHYdfFTr4eFz.eIz.5kyrnXAwtvOyW"); //BASIC AUTH TOKEN
+    var signatureCompanyProd = '$2y$10$I4vRzbe3bEYpLWHoWzrE4OWFHYdfFTr4eFz.eIz.5kyrnXAwtvOyW';
+
+    var token = tokenCompanyProd
+    var signature = signatureCompanyProd
+
+    return {token, signature}
+  }
+
   //this method is used to validate the response signature
   function validatesignature(data,signature,SK){
     data = JSON.stringify(data);
@@ -132,4 +138,37 @@ import { sha256 } from 'js-sha256';
     }else{
         return false;
     }
+  }
+
+  export function getCustomerList() {
+    return new Promise((resolve, reject) => {
+      
+      const {token, signature} = getTokenAndSignature()
+
+      var responsesignature = null;
+      //Dispatch request via fetch API or with whatever else which best suits for you
+      fetch('https://shuftipro.com/backoffice/customers',
+      {
+          method : 'get',
+          headers : {
+              'Accept'				: 'application/json',
+              'Content-Type'	: 'application/json',
+              'Authorization'	: 'Basic ' +token
+          },
+      // body: JSON.stringify(payload)
+      })
+      .then(function(response) {
+          console.log('response:', response);
+          responsesignature = response.headers.get('Signature');
+          return response.json();
+      }).then(function(data) {
+          if(validatesignature(data,responsesignature, signature)){
+              console.log('signature validated - data:',data)
+              resolve({title: data.event, text: data.declined_reason || ''})
+          }else{
+              console.log('signature not validated - data:',data)
+              resolve(null)
+          }
+      });
+    });
   }
