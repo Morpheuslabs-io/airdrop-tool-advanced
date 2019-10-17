@@ -419,7 +419,7 @@ class KycForm extends Component {
       fileFaceBase64,
     } = this.state;
 
-    await getCustomerList();
+    // await getCustomerList();
 
     if (email === "") {
       Swal.fire({
