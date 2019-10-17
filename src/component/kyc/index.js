@@ -35,7 +35,10 @@ class KycContainer extends Component {
           <div className='page-wrapper d-flex flex-column'>
             <div className='step-content'>
               <div className='container step-widget pt-0' style={{overflowX: 'hidden'}}>
-                <KycForm />
+                <KycForm 
+                  webcamRefDoc={this.props.webcamRefDoc} 
+                  captureDoc={this.props.captureDoc}
+                />
               </div>
             </div>
           </div>

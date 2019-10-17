@@ -19,6 +19,8 @@ import faceVerifyImg from '../../assets/img/face.webp.png'
 
 import emailList from './email-list'
 
+import Webcam from "react-webcam";
+
 class KycForm extends Component {
 
   state = {
@@ -522,6 +524,43 @@ class KycForm extends Component {
     }
   };
 
+  handleCapturePhotoDoc = (e) => {
+    e.preventDefault();
+    const capturedPhotoDoc = this.props.captureDoc()
+    console.log('handleCapturePhotoDoc:', capturedPhotoDoc)
+    this.setState({
+      fileDocBase64: capturedPhotoDoc
+    })
+  }
+
+  displayWebcamDoc = () => {
+    const {webcamRefDoc, captureDoc} = this.props
+    const videoConstraints = {
+      // width: 1280,
+      // height: 720,
+      facingMode: "user"
+    };
+    return (
+      <>
+        <Webcam
+          audio={false}
+          height='100%'
+          ref={webcamRefDoc}
+          screenshotFormat="image/jpeg"
+          width='100%'
+          videoConstraints={videoConstraints}
+        />
+        
+        <Button
+          onClick={(e) => {this.handleCapturePhotoDoc(e)}}
+          variant='contained' size='lg' color="secondary"
+        >
+          Capture Photo
+        </Button>
+      </>
+    );
+  }
+
   render() {
     const {urlFileDoc, urlFileFace} = this.state
     let docTypes = [];
@@ -765,6 +804,11 @@ class KycForm extends Component {
                     </Col>
                   </Row>
                 }
+                <Row>
+                  <Col sm={4}>
+                    {this.displayWebcamDoc()}
+                  </Col>
+                </Row>
               </div>
           <Modal
             size='sm'
