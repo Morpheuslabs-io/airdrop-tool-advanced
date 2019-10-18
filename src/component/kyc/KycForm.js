@@ -40,6 +40,9 @@ class KycForm extends Component {
     valueDocAttachOption: 0,
     labelDocAttachOption: "Drag & Drop",
 
+    valueFaceAttachOption: 0,
+    labelFaceAttachOption: "Drag & Drop",
+
     urlFileDoc: "",
     fileDocBase64: "",
 
@@ -408,6 +411,15 @@ class KycForm extends Component {
     });
   };
 
+  handleChangeFaceAttachOption = selectedOption => {
+    this.setState({
+        valueFaceAttachOption: selectedOption.value,
+        labelFaceAttachOption: selectedOption.label,
+        fileFaceBase64: "",
+        urlFileFace: ""
+    });
+  };
+
   handleSubmit = async () => {
 
     const {
@@ -541,6 +553,21 @@ class KycForm extends Component {
     })
   }
 
+  handleCapturePhotoFace = (e) => {
+    e.preventDefault();
+    const capturedPhotoFace = this.props.captureFace()
+    console.log('handleCapturePhotoFace:', capturedPhotoFace)
+    this.setState({
+      fileFaceBase64: capturedPhotoFace
+    })
+    Swal.fire({
+      type: 'success',
+      title: 'Face Photo',
+      text: 'Captured!',
+      timer: 2000
+    })
+  }
+
   displayWebcamDoc = () => {
     const {webcamRefDoc, captureDoc} = this.props
     const videoConstraints = {
@@ -569,8 +596,37 @@ class KycForm extends Component {
     );
   }
 
-  render() {
-    const {urlFileDoc, urlFileFace, fileDocBase64, fileFaceBase64} = this.state
+  displayWebcamFace = () => {
+    const {webcamRefFace, captureFace} = this.props
+    const videoConstraints = {
+      // width: 1280,
+      // height: 720,
+      facingMode: "user"
+    };
+    return (
+      <>
+        <Webcam
+          audio={false}
+          height='100%'
+          ref={webcamRefFace}
+          screenshotFormat="image/jpeg"
+          width='100%'
+          videoConstraints={videoConstraints}
+        />
+        <div style={{paddingTop: '8px'}}/>
+        <Button
+          onClick={(e) => {this.handleCapturePhotoFace(e)}}
+          variant='contained' size='sm' color="secondary"
+        >
+          Capture Photo
+        </Button>
+      </>
+    );
+  }
+
+  displayDocZone = () => {
+    const {urlFileDoc, fileDocBase64} = this.state
+    
     let docAttachOptions = [];
     docAttachOptions.push({ label: "Drag & Drop", value: 0 });
     docAttachOptions.push({ label: "Webcam", value: 1 });
@@ -581,6 +637,137 @@ class KycForm extends Component {
       height: '100%'
     };
 
+    return (
+    <div style={{paddingTop: '27px'}}>
+      <img 
+        src={docVerifyImg} className='wg-label'
+        width='100%'
+      />
+      <div style={{paddingTop: '15px'}}/>
+      <Select
+        value={docAttachOptions[this.state.valueDocAttachOption]}
+        onChange={this.handleChangeDocAttachOption}
+        options={docAttachOptions}
+        placeholder=""
+        width='100%'
+      />
+      <div style={{paddingTop: '15px'}}/>
+      { this.state.valueDocAttachOption === 0 ?
+        <ReactDropzone
+        
+          style={{position: 'relative', width: '100%', height: '100%', borderWidth: '2px', borderColor: '#f0f0f0', borderStyle: 'dashed', borderRadius: '5px', ariaDisabled: "false"}}
+          onDrop={this.onDropDoc}
+        >
+          {urlFileDoc === "" ?
+            <>
+              <p></p>
+              <p style={{textAlign: 'center'}}>Drag & Drop Your Passport</p>
+              <p style={{textAlign: 'center'}}>(JPG, JPEG, PNG, PDF with max 16MB)</p>
+            </>
+            :
+            <img
+              src={urlFileDoc}
+              style={previewStyle}
+            />
+          }
+        </ReactDropzone>
+        :
+            fileDocBase64 === "" ?
+              this.displayWebcamDoc()
+            :
+              <img
+                src={fileDocBase64}
+                style={previewStyle}
+              />
+      }
+    </div>
+    )
+  }
+
+  displayFaceZone = () => {
+    const {urlFileFace, fileFaceBase64} = this.state
+    
+    let faceAttachOptions = [];
+    faceAttachOptions.push({ label: "Drag & Drop", value: 0 });
+    faceAttachOptions.push({ label: "Webcam", value: 1 });
+
+    const previewStyle = {
+      display: 'inline',
+      width: '100%',
+      height: '100%'
+    };
+
+    return (
+      <div style={{paddingTop: '27px'}}>
+        <img 
+          src={faceVerifyImg} className='wg-label'
+          width='100%'
+        />
+        <div style={{paddingTop: '15px'}}/>
+        <Select
+          value={faceAttachOptions[this.state.valueFaceAttachOption]}
+          onChange={this.handleChangeFaceAttachOption}
+          options={faceAttachOptions}
+          placeholder=""
+          width='100%'
+        />
+        <div style={{paddingTop: '15px'}}/>
+        { this.state.valueFaceAttachOption === 0 ?
+          <ReactDropzone
+          
+            style={{position: 'relative', width: '100%', height: '100%', borderWidth: '2px', borderColor: '#f0f0f0', borderStyle: 'dashed', borderRadius: '5px', ariaDisabled: "false"}}
+            onDrop={this.onDropFace}
+          >
+            {urlFileFace === "" ?
+              <>
+                <p></p>
+                <p style={{textAlign: 'center'}}>Drag & Drop Your Face Photo</p>
+                <p style={{textAlign: 'center'}}>(JPG, JPEG, PNG with max 16MB)</p>
+              </>
+              :
+              <img
+                src={urlFileFace}
+                style={previewStyle}
+              />
+            }
+          </ReactDropzone>
+          :
+            fileFaceBase64 === "" ?
+                this.displayWebcamFace()
+              :
+                <img
+                  src={fileFaceBase64}
+                  style={previewStyle}
+                />
+        }
+      </div>
+    )
+  }
+
+  displayButtonSubmit = () => {
+    return (
+      <div className='wg-label'>
+        <Button
+          onClick={this.handleSubmit}
+          variant='contained' size='lg' color="secondary"
+        >
+          {
+            this.state.spinnerShow ?
+              <Spinner 
+                name='three-bounce' color='#00B1EF'
+                noFadeIn
+              />
+              :
+              'Submit'
+          }  
+          
+        </Button>
+      </div>
+    )
+  }
+
+  render() {
+    
     return (
       <div className='container step-widget'>
           <div className='widget-header'>
@@ -670,168 +857,37 @@ class KycForm extends Component {
                       </Col>
                     </Row>
                 }
-                { !isMobile ? 
+                { isMobile ? 
                   <>
                   <Row>
                     <Col sm={4}>
-                      <div style={{paddingTop: '27px'}}>
-                        <img 
-                          src={docVerifyImg} className='wg-label'
-                          width='100%'
-                        />
-                        <div style={{paddingTop: '15px'}}/>
-                        <Select
-                          value={docAttachOptions[this.state.valueDocAttachOption]}
-                          onChange={this.handleChangeDocAttachOption}
-                          options={docAttachOptions}
-                          placeholder=""
-                          width='100%'
-                        />
-                        <div style={{paddingTop: '15px'}}/>
-                        { this.state.valueDocAttachOption === 0 ?
-                          <ReactDropzone
-                          
-                            style={{position: 'relative', width: '100%', height: '100%', borderWidth: '2px', borderColor: '#f0f0f0', borderStyle: 'dashed', borderRadius: '5px', ariaDisabled: "false"}}
-                            onDrop={this.onDropDoc}
-                          >
-                            {urlFileDoc === "" ?
-                              <>
-                                <p></p>
-                                <p style={{textAlign: 'center'}}>Drag & Drop Your Passport</p>
-                                <p style={{textAlign: 'center'}}>(JPG, JPEG, PNG, PDF with max 16MB)</p>
-                              </>
-                              :
-                              <img
-                                src={urlFileDoc}
-                                style={previewStyle}
-                              />
-                            }
-                          </ReactDropzone>
-                          :
-                              fileDocBase64 === "" ?
-                                this.displayWebcamDoc()
-                              :
-                                <img
-                                  src={fileDocBase64}
-                                  style={previewStyle}
-                                />
-                        }
-                      </div>
+                      {this.displayDocZone()}
                     </Col>
                   </Row>
                   
                   <Row>
                     <Col sm={4}>
-                      <div style={{paddingTop: '27px'}}>
-                        <img 
-                          src={faceVerifyImg} className='wg-label'
-                          width='100%'
-                        />
-                        <ReactDropzone
-                        
-                          style={{position: 'relative', width: '100%', height: '100%', borderWidth: '2px', borderColor: '#f0f0f0', borderStyle: 'dashed', borderRadius: '5px', ariaDisabled: "false"}}
-                          onDrop={this.onDropFace}
-                        >
-                          {urlFileFace === "" ?
-                              "Drag & Drop Your Face Image (JPG, JPEG, PNG with max 16MB)"
-                            :
-                            <img
-                              src={urlFileFace}
-                              style={previewStyle}
-                            />
-                          }
-                        </ReactDropzone>
-                      </div>
+                      {this.displayFaceZone()}
                     </Col>
                   </Row>
                   <Row>
-                    <Col sm={2} className='float-left'>
-                      <div className='wg-label' style={{paddingTop: '30px'}}>
-                        <Button
-                          onClick={this.handleSubmit}
-                          variant='contained' size='lg' color="secondary"
-                        >
-                          {
-                            this.state.spinnerShow ?
-                              <Spinner 
-                                name='three-bounce' color='#00B1EF'
-                                noFadeIn
-                              />
-                              :
-                              'Submit'
-                          }  
-                          
-                        </Button>
-                      </div>
+                    <Col sm={2} style={{paddingTop: '30px'}}>
+                      {this.displayButtonSubmit()}
                     </Col>
                   </Row>
                   </>
                   :
                   <Row>
                     <Col sm={4}>
-                      <div style={{paddingTop: '27px'}}>
-                        <img 
-                          src={docVerifyImg} className='wg-label'
-                          width='100%'
-                        />
-                        <ReactDropzone
-                        
-                          style={{position: 'relative', width: '100%', height: '100%', borderWidth: '2px', borderColor: '#f0f0f0', borderStyle: 'dashed', borderRadius: '5px', ariaDisabled: "false"}}
-                          onDrop={this.onDropDoc}
-                        >
-                          {urlFileDoc === "" ?
-                              "Drag & Drop Your Passport (JPG, JPEG, PNG, PDF with max 16MB)"
-                            :
-                            <img
-                              src={urlFileDoc}
-                              style={previewStyle}
-                            />
-                          }
-                        </ReactDropzone>
-                      </div>
+                      {this.displayDocZone()}
                     </Col>
                     <Col sm={1}/>
-                    <Col sm={2} className='float-left'>
-                      <div className='wg-label' style={{paddingTop: '100px'}}>
-                        <Button
-                          onClick={this.handleSubmit}
-                          variant='contained' size='lg' color="secondary"
-                        >
-                          {
-                            this.state.spinnerShow ?
-                              <Spinner 
-                                name='three-bounce' color='#00B1EF'
-                                noFadeIn
-                              />
-                              :
-                              'Submit'
-                          }  
-                          
-                        </Button>
-                      </div>
+                    <Col sm={2} style={{paddingLeft: '35px', paddingTop: '100px'}}>
+                      {this.displayButtonSubmit()}
                     </Col>
                     <Col sm={1}/>
                     <Col sm={4}>
-                      <div style={{paddingTop: '27px'}}>
-                        <img 
-                          src={faceVerifyImg} className='wg-label'
-                          width='100%'
-                        />
-                        <ReactDropzone
-                        
-                          style={{position: 'relative', width: '100%', height: '100%', borderWidth: '2px', borderColor: '#f0f0f0', borderStyle: 'dashed', borderRadius: '5px', ariaDisabled: "false"}}
-                          onDrop={this.onDropFace}
-                        >
-                          {urlFileFace === "" ?
-                              "Drag & Drop Your Face Image (JPG, JPEG, PNG with max 16MB)"
-                            :
-                            <img
-                              src={urlFileFace}
-                              style={previewStyle}
-                            />
-                          }
-                        </ReactDropzone>
-                      </div>
+                      {this.displayFaceZone()}
                     </Col>
                   </Row>
                 }

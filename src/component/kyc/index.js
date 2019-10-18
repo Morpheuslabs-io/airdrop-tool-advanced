@@ -38,6 +38,8 @@ class KycContainer extends Component {
                 <KycForm 
                   webcamRefDoc={this.props.webcamRefDoc} 
                   captureDoc={this.props.captureDoc}
+                  webcamRefFace={this.props.webcamRefFace} 
+                  captureFace={this.props.captureFace}
                 />
               </div>
             </div>

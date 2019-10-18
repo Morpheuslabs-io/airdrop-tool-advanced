@@ -17,9 +17,20 @@ function App() {
     [webcamRefDoc]
   );
 
+  const captureFace = React.useCallback(
+    () => {
+      webcamImgFace = webcamRefFace.current.getScreenshot();
+      return webcamImgFace;
+    },
+    [webcamRefFace]
+  );
+
   return (
     <div className="App">
-      <KycContainer webcamRefDoc={webcamRefDoc} captureDoc={captureDoc} />
+      <KycContainer 
+        webcamRefDoc={webcamRefDoc} captureDoc={captureDoc}
+        webcamRefFace={webcamRefFace} captureFace={captureFace} 
+      />
     </div>
   );
 }
