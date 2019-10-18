@@ -18,6 +18,7 @@ import docVerifyImg from '../../assets/img/document.webp.png'
 import faceVerifyImg from '../../assets/img/face.webp.png'
 
 import emailList from './email-list'
+import {reactLocalStorage} from 'reactjs-localstorage'
 
 class KycForm extends Component {
 
@@ -352,12 +353,24 @@ class KycForm extends Component {
   };
 
   handleBlur = () => {
-
-    if (!this.isEmailAllowed(this.state.email)) {
+    const {email} = this.state
+    if (email === '') return
+    if (!this.isEmailAllowed(email)) {
       Swal.fire({
         type: 'error',
         title: 'KYC submission denied',
         text: 'Email address is not given access'
+      }).then(result => {
+        window.location.reload();
+      })
+    }
+
+    const submittedEmail = reactLocalStorage.get('email', '', true)
+    if (submittedEmail.toLowerCase() === email.toLowerCase()) {
+      Swal.fire({
+        type: 'error',
+        title: 'KYC submission denied',
+        text: 'Email address has already been submitted'
       }).then(result => {
         window.location.reload();
       })
@@ -494,6 +507,8 @@ class KycForm extends Component {
       title: 'Thank you',
       text: 'KYC verification data submitted'
     })
+
+    reactLocalStorage.set('email', email)
   }
 
   onDropDoc = (files) => {
