@@ -37,8 +37,8 @@ class KycForm extends Component {
     value: '',
     label: '',
 
-    valueDocType: 0,
-    labelDocType: "Passport",
+    valueDocAttachOption: 0,
+    labelDocAttachOption: "Drag & Drop",
 
     urlFileDoc: "",
     fileDocBase64: "",
@@ -399,10 +399,12 @@ class KycForm extends Component {
     })
   }
   
-  handleChangeSelectDocType = selectedOption => {
+  handleChangeDocAttachOption = selectedOption => {
     this.setState({
-        valueDocType: selectedOption.value,
-        labelDocType: selectedOption.label
+        valueDocAttachOption: selectedOption.value,
+        labelDocAttachOption: selectedOption.label,
+        fileDocBase64: "",
+        urlFileDoc: ""
     });
   };
 
@@ -531,6 +533,12 @@ class KycForm extends Component {
     this.setState({
       fileDocBase64: capturedPhotoDoc
     })
+    Swal.fire({
+      type: 'success',
+      title: 'Passport Photo',
+      text: 'Captured!',
+      timer: 2000
+    })
   }
 
   displayWebcamDoc = () => {
@@ -550,10 +558,10 @@ class KycForm extends Component {
           width='100%'
           videoConstraints={videoConstraints}
         />
-        
+        <div style={{paddingTop: '8px'}}/>
         <Button
           onClick={(e) => {this.handleCapturePhotoDoc(e)}}
-          variant='contained' size='lg' color="secondary"
+          variant='contained' size='sm' color="secondary"
         >
           Capture Photo
         </Button>
@@ -562,10 +570,10 @@ class KycForm extends Component {
   }
 
   render() {
-    const {urlFileDoc, urlFileFace} = this.state
-    let docTypes = [];
-    docTypes.push({ label: "Passport", value: 0 });
-    docTypes.push({ label: "ID Card", value: 1 });
+    const {urlFileDoc, urlFileFace, fileDocBase64, fileFaceBase64} = this.state
+    let docAttachOptions = [];
+    docAttachOptions.push({ label: "Drag & Drop", value: 0 });
+    docAttachOptions.push({ label: "Webcam", value: 1 });
 
     const previewStyle = {
       display: 'inline',
@@ -662,29 +670,52 @@ class KycForm extends Component {
                       </Col>
                     </Row>
                 }
-                { isMobile ? 
+                { !isMobile ? 
                   <>
                   <Row>
                     <Col sm={4}>
                       <div style={{paddingTop: '27px'}}>
                         <img 
                           src={docVerifyImg} className='wg-label'
-                          width='200px'
+                          width='100%'
                         />
-                        <ReactDropzone
-                        
-                          style={{position: 'relative', width: '200px', height: '200px', borderWidth: '2px', borderColor: '#f0f0f0', borderStyle: 'dashed', borderRadius: '5px', ariaDisabled: "false"}}
-                          onDrop={this.onDropDoc}
-                        >
-                          {urlFileDoc === "" ?
-                              "Drag & Drop Your Passport (JPG, JPEG, PNG, PDF with max 16MB)"
-                            :
-                            <img
-                              src={urlFileDoc}
-                              style={previewStyle}
-                            />
-                          }
-                        </ReactDropzone>
+                        <div style={{paddingTop: '15px'}}/>
+                        <Select
+                          value={docAttachOptions[this.state.valueDocAttachOption]}
+                          onChange={this.handleChangeDocAttachOption}
+                          options={docAttachOptions}
+                          placeholder=""
+                          width='100%'
+                        />
+                        <div style={{paddingTop: '15px'}}/>
+                        { this.state.valueDocAttachOption === 0 ?
+                          <ReactDropzone
+                          
+                            style={{position: 'relative', width: '100%', height: '100%', borderWidth: '2px', borderColor: '#f0f0f0', borderStyle: 'dashed', borderRadius: '5px', ariaDisabled: "false"}}
+                            onDrop={this.onDropDoc}
+                          >
+                            {urlFileDoc === "" ?
+                              <>
+                                <p></p>
+                                <p style={{textAlign: 'center'}}>Drag & Drop Your Passport</p>
+                                <p style={{textAlign: 'center'}}>(JPG, JPEG, PNG, PDF with max 16MB)</p>
+                              </>
+                              :
+                              <img
+                                src={urlFileDoc}
+                                style={previewStyle}
+                              />
+                            }
+                          </ReactDropzone>
+                          :
+                              fileDocBase64 === "" ?
+                                this.displayWebcamDoc()
+                              :
+                                <img
+                                  src={fileDocBase64}
+                                  style={previewStyle}
+                                />
+                        }
                       </div>
                     </Col>
                   </Row>
@@ -694,11 +725,11 @@ class KycForm extends Component {
                       <div style={{paddingTop: '27px'}}>
                         <img 
                           src={faceVerifyImg} className='wg-label'
-                          width='200px'
+                          width='100%'
                         />
                         <ReactDropzone
                         
-                          style={{position: 'relative', width: '200px', height: '200px', borderWidth: '2px', borderColor: '#f0f0f0', borderStyle: 'dashed', borderRadius: '5px', ariaDisabled: "false"}}
+                          style={{position: 'relative', width: '100%', height: '100%', borderWidth: '2px', borderColor: '#f0f0f0', borderStyle: 'dashed', borderRadius: '5px', ariaDisabled: "false"}}
                           onDrop={this.onDropFace}
                         >
                           {urlFileFace === "" ?
@@ -741,11 +772,11 @@ class KycForm extends Component {
                       <div style={{paddingTop: '27px'}}>
                         <img 
                           src={docVerifyImg} className='wg-label'
-                          width='200px'
+                          width='100%'
                         />
                         <ReactDropzone
                         
-                          style={{position: 'relative', width: '200px', height: '200px', borderWidth: '2px', borderColor: '#f0f0f0', borderStyle: 'dashed', borderRadius: '5px', ariaDisabled: "false"}}
+                          style={{position: 'relative', width: '100%', height: '100%', borderWidth: '2px', borderColor: '#f0f0f0', borderStyle: 'dashed', borderRadius: '5px', ariaDisabled: "false"}}
                           onDrop={this.onDropDoc}
                         >
                           {urlFileDoc === "" ?
@@ -784,11 +815,11 @@ class KycForm extends Component {
                       <div style={{paddingTop: '27px'}}>
                         <img 
                           src={faceVerifyImg} className='wg-label'
-                          width='200px'
+                          width='100%'
                         />
                         <ReactDropzone
                         
-                          style={{position: 'relative', width: '200px', height: '200px', borderWidth: '2px', borderColor: '#f0f0f0', borderStyle: 'dashed', borderRadius: '5px', ariaDisabled: "false"}}
+                          style={{position: 'relative', width: '100%', height: '100%', borderWidth: '2px', borderColor: '#f0f0f0', borderStyle: 'dashed', borderRadius: '5px', ariaDisabled: "false"}}
                           onDrop={this.onDropFace}
                         >
                           {urlFileFace === "" ?
@@ -804,11 +835,6 @@ class KycForm extends Component {
                     </Col>
                   </Row>
                 }
-                <Row>
-                  <Col sm={4}>
-                    {this.displayWebcamDoc()}
-                  </Col>
-                </Row>
               </div>
           <Modal
             size='sm'
