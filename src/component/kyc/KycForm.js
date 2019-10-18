@@ -12,12 +12,13 @@ import countryList from 'react-select-country-list'
 import ReactDropzone from "react-dropzone";
 import "react-image-gallery/styles/css/image-gallery.css";
 import './snippet'
-import { buildPayload, doFetch } from './snippet';
+import { buildPayload, doFetch, getCustomerList } from './snippet';
 
 import docVerifyImg from '../../assets/img/document.webp.png'
 import faceVerifyImg from '../../assets/img/face.webp.png'
 
 import emailList from './email-list'
+import {reactLocalStorage} from 'reactjs-localstorage'
 
 import Webcam from "react-webcam";
 
@@ -357,12 +358,24 @@ class KycForm extends Component {
   };
 
   handleBlur = () => {
-
-    if (!this.isEmailAllowed(this.state.email)) {
+    const {email} = this.state
+    if (email === '') return
+    if (!this.isEmailAllowed(email)) {
       Swal.fire({
         type: 'error',
         title: 'KYC submission denied',
         text: 'Email address is not given access'
+      }).then(result => {
+        window.location.reload();
+      })
+    }
+
+    const submittedEmail = reactLocalStorage.get('email', '', true)
+    if (submittedEmail.toLowerCase() === email.toLowerCase()) {
+      Swal.fire({
+        type: 'error',
+        title: 'KYC submission denied',
+        text: 'Email address has already been submitted'
       }).then(result => {
         window.location.reload();
       })
@@ -434,6 +447,8 @@ class KycForm extends Component {
       fileDocBase64,
       fileFaceBase64,
     } = this.state;
+
+    // await getCustomerList();
 
     if (email === "") {
       Swal.fire({
@@ -508,6 +523,8 @@ class KycForm extends Component {
       title: 'Thank you',
       text: 'KYC verification data submitted'
     })
+
+    reactLocalStorage.set('email', email)
   }
 
   onDropDoc = (files) => {
