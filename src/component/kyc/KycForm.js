@@ -655,7 +655,11 @@ class KycForm extends Component {
                           onDrop={this.onDropDoc}
                         >
                           {urlFileDoc === "" ?
-                              "Drag & Drop Your Passport (JPG, JPEG, PNG, PDF with max 16MB)"
+                            <>
+                              <p></p>
+                              <p style={{textAlign: 'center'}}>Drag & Drop Your Passport</p>
+                              <p style={{textAlign: 'center'}}>(JPG, JPEG, PNG, PDF with <b style={{color: '#ff0000'}}>max 2MB</b>)</p>
+                            </>
                             :
                             <img
                               src={urlFileDoc}
@@ -680,7 +684,11 @@ class KycForm extends Component {
                           onDrop={this.onDropFace}
                         >
                           {urlFileFace === "" ?
-                              "Drag & Drop Your Face Image (JPG, JPEG, PNG with max 16MB)"
+                            <>
+                              <p></p>
+                              <p style={{textAlign: 'center'}}>Drag & Drop Your Face Photo</p>
+                              <p style={{textAlign: 'center'}}>(JPG, JPEG, PNG with <b style={{color: '#ff0000'}}>max 2MB</b>)</p>
+                            </>
                             :
                             <img
                               src={urlFileFace}
@@ -727,7 +735,11 @@ class KycForm extends Component {
                           onDrop={this.onDropDoc}
                         >
                           {urlFileDoc === "" ?
-                              "Drag & Drop Your Passport (JPG, JPEG, PNG, PDF with max 16MB)"
+                            <>
+                              <p></p>
+                              <p style={{textAlign: 'center'}}>Drag & Drop Your Passport</p>
+                              <p style={{textAlign: 'center'}}>(JPG, JPEG, PNG, PDF with <b style={{color: '#ff0000'}}>max 2MB</b>)</p>
+                            </>
                             :
                             <img
                               src={urlFileDoc}
@@ -770,7 +782,11 @@ class KycForm extends Component {
                           onDrop={this.onDropFace}
                         >
                           {urlFileFace === "" ?
-                              "Drag & Drop Your Face Image (JPG, JPEG, PNG with max 16MB)"
+                            <>
+                              <p></p>
+                              <p style={{textAlign: 'center'}}>Drag & Drop Your Face Photo</p>
+                              <p style={{textAlign: 'center'}}>(JPG, JPEG, PNG with <b style={{color: '#ff0000'}}>max 2MB</b>)</p>
+                            </>
                             :
                             <img
                               src={urlFileFace}
