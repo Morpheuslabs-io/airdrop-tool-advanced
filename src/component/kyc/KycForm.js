@@ -18,6 +18,7 @@ import docVerifyImg from '../../assets/img/document.webp.png'
 import faceVerifyImg from '../../assets/img/face.webp.png'
 
 import emailList from './email-list'
+import restrictedCountryList from './restricted-country'
 import {reactLocalStorage} from 'reactjs-localstorage'
 
 const MAX_FILE_SIZE = 2*1024*1024 // 2MB
@@ -55,11 +56,21 @@ class KycForm extends Component {
   }
 
   changeHandlerCountry = selectedOption => {
-    console.log(selectedOption);
-    this.setState({
-        value: selectedOption.value,
-        label: selectedOption.label
-    });
+    // console.log(selectedOption);
+    if (this.isCountryRestricted(selectedOption.label)) {
+      Swal.fire({
+        type: 'error',
+        title: 'KYC submission denied',
+        text: `Country is not given access`
+      }).then(result => {
+        window.location.reload();
+      })
+    } else {
+      this.setState({
+          value: selectedOption.value,
+          label: selectedOption.label
+      });
+    }
   };
 
   displayDOB = () => {
@@ -341,6 +352,20 @@ class KycForm extends Component {
   isEmailAllowed = (email) => {
     for (let i=0; i<emailList.length; i++) {
       if (email.toLowerCase() === emailList[i].toLowerCase()) {
+        return true
+      }
+    }
+    return false
+  }
+
+  isCountryRestricted = (country) => {
+    for (let i=0; i<restrictedCountryList.length; i++) {
+      const restrictedCountry = restrictedCountryList[i]
+      const countryLowerCase = country.toLowerCase()
+      const restrictedCountryLowerCase = restrictedCountry.toLowerCase()
+      if (countryLowerCase.indexOf(restrictedCountryLowerCase) !== -1 ||
+          restrictedCountryLowerCase.indexOf(countryLowerCase) !== -1
+      ) {
         return true
       }
     }
