@@ -20,6 +20,7 @@ import faceVerifyImg from '../../assets/img/face.webp.png'
 import emailList from './email-list'
 import {reactLocalStorage} from 'reactjs-localstorage'
 
+const MAX_FILE_SIZE = 2*1024*1024 // 2MB
 class KycForm extends Component {
 
   state = {
@@ -511,6 +512,31 @@ class KycForm extends Component {
     reactLocalStorage.set('email', email)
   }
 
+  onDropRejected = (docInfo, err) => {
+    if (err) {
+      console.log('onDropRejected - err:', err)
+      if (docInfo === 'Passport') {
+        this.setState({
+          urlFileDoc: "",
+          fileDocBase64: ""
+        })
+      } else {
+        this.setState({
+          urlFileFace: "",
+          fileFaceBase64: ""
+        })
+      }
+
+      Swal.fire({
+        type: 'error',
+        title: 'KYC submission denied',
+        text: `${docInfo} file size exceeds the limit of 2MB`
+      }).then(result => {
+        // window.location.reload();
+      })
+    }
+  }
+
   onDropDoc = (files) => {
     if (files && files[0]) {
       const reader = new FileReader();
@@ -653,6 +679,8 @@ class KycForm extends Component {
                         
                           style={{position: 'relative', width: '200px', height: '200px', borderWidth: '2px', borderColor: '#f0f0f0', borderStyle: 'dashed', borderRadius: '5px', ariaDisabled: "false"}}
                           onDrop={this.onDropDoc}
+                          maxSize={MAX_FILE_SIZE}
+                          onDropRejected={(err) => {this.onDropRejected('Passport', err)}}
                         >
                           {urlFileDoc === "" ?
                             <>
@@ -682,6 +710,8 @@ class KycForm extends Component {
                         
                           style={{position: 'relative', width: '200px', height: '200px', borderWidth: '2px', borderColor: '#f0f0f0', borderStyle: 'dashed', borderRadius: '5px', ariaDisabled: "false"}}
                           onDrop={this.onDropFace}
+                          maxSize={MAX_FILE_SIZE}
+                          onDropRejected={(err) => {this.onDropRejected('Face', err)}}
                         >
                           {urlFileFace === "" ?
                             <>
@@ -733,6 +763,8 @@ class KycForm extends Component {
                         
                           style={{position: 'relative', width: '200px', height: '200px', borderWidth: '2px', borderColor: '#f0f0f0', borderStyle: 'dashed', borderRadius: '5px', ariaDisabled: "false"}}
                           onDrop={this.onDropDoc}
+                          maxSize={MAX_FILE_SIZE}
+                          onDropRejected={(err) => {this.onDropRejected('Passport', err)}}
                         >
                           {urlFileDoc === "" ?
                             <>
@@ -780,6 +812,8 @@ class KycForm extends Component {
                         
                           style={{position: 'relative', width: '200px', height: '200px', borderWidth: '2px', borderColor: '#f0f0f0', borderStyle: 'dashed', borderRadius: '5px', ariaDisabled: "false"}}
                           onDrop={this.onDropFace}
+                          maxSize={MAX_FILE_SIZE}
+                          onDropRejected={(err) => {this.onDropRejected('Face', err)}}
                         >
                           {urlFileFace === "" ?
                             <>
