@@ -18,10 +18,12 @@ import docVerifyImg from '../../assets/img/document.webp.png'
 import faceVerifyImg from '../../assets/img/face.webp.png'
 
 import emailList from './email-list'
+import restrictedCountryList from './restricted-country'
 import {reactLocalStorage} from 'reactjs-localstorage'
 
 import Webcam from "react-webcam";
 
+const MAX_FILE_SIZE = 2*1024*1024 // 2MB
 class KycForm extends Component {
 
   state = {
@@ -59,11 +61,21 @@ class KycForm extends Component {
   }
 
   changeHandlerCountry = selectedOption => {
-    console.log(selectedOption);
-    this.setState({
-        value: selectedOption.value,
-        label: selectedOption.label
-    });
+    // console.log(selectedOption);
+    if (this.isCountryRestricted(selectedOption.label)) {
+      Swal.fire({
+        type: 'error',
+        title: 'KYC submission denied',
+        text: `Country is not given access`
+      }).then(result => {
+        window.location.reload();
+      })
+    } else {
+      this.setState({
+          value: selectedOption.value,
+          label: selectedOption.label
+      });
+    }
   };
 
   displayDOB = () => {
@@ -351,6 +363,20 @@ class KycForm extends Component {
     return false
   }
 
+  isCountryRestricted = (country) => {
+    for (let i=0; i<restrictedCountryList.length; i++) {
+      const restrictedCountry = restrictedCountryList[i]
+      const countryLowerCase = country.toLowerCase()
+      const restrictedCountryLowerCase = restrictedCountry.toLowerCase()
+      if (countryLowerCase.indexOf(restrictedCountryLowerCase) !== -1 ||
+          restrictedCountryLowerCase.indexOf(countryLowerCase) !== -1
+      ) {
+        return true
+      }
+    }
+    return false
+  }
+
   handleChange = (name, value) => {
     this.setState({
       [name]: value,
@@ -525,6 +551,31 @@ class KycForm extends Component {
     })
 
     reactLocalStorage.set('email', email)
+  }
+
+  onDropRejected = (docInfo, err) => {
+    if (err) {
+      console.log('onDropRejected - err:', err)
+      if (docInfo === 'Passport') {
+        this.setState({
+          urlFileDoc: "",
+          fileDocBase64: ""
+        })
+      } else {
+        this.setState({
+          urlFileFace: "",
+          fileFaceBase64: ""
+        })
+      }
+
+      Swal.fire({
+        type: 'error',
+        title: 'KYC submission denied',
+        text: `${docInfo} file size exceeds the limit of 2MB`
+      }).then(result => {
+        // window.location.reload();
+      })
+    }
   }
 
   onDropDoc = (files) => {
