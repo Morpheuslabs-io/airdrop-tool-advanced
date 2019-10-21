@@ -725,12 +725,14 @@ class KycForm extends Component {
         
           style={{position: 'relative', width: '100%', height: '100%', borderWidth: '2px', borderColor: '#f0f0f0', borderStyle: 'dashed', borderRadius: '5px', ariaDisabled: "false"}}
           onDrop={this.onDropDoc}
+          maxSize={MAX_FILE_SIZE}
+          onDropRejected={(err) => {this.onDropRejected('Passport', err)}}
         >
           {urlFileDoc === "" ?
             <>
               <p></p>
               <p style={{textAlign: 'center'}}>Drag & Drop Your Passport</p>
-              <p style={{textAlign: 'center'}}>(JPG, JPEG, PNG, PDF with max 16MB)</p>
+              <p style={{textAlign: 'center'}}>(JPG, JPEG, PNG, PDF with <b style={{color: '#ff0000'}}>max 2MB</b>)</p>
             </>
             :
             <img
@@ -785,12 +787,14 @@ class KycForm extends Component {
           
             style={{position: 'relative', width: '100%', height: '100%', borderWidth: '2px', borderColor: '#f0f0f0', borderStyle: 'dashed', borderRadius: '5px', ariaDisabled: "false"}}
             onDrop={this.onDropFace}
+            maxSize={MAX_FILE_SIZE}
+            onDropRejected={(err) => {this.onDropRejected('Face', err)}}
           >
             {urlFileFace === "" ?
               <>
                 <p></p>
                 <p style={{textAlign: 'center'}}>Drag & Drop Your Face Photo</p>
-                <p style={{textAlign: 'center'}}>(JPG, JPEG, PNG with max 16MB)</p>
+                <p style={{textAlign: 'center'}}>(JPG, JPEG, PNG with <b style={{color: '#ff0000'}}>max 2MB</b>)</p>
               </>
               :
               <img
