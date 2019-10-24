@@ -849,7 +849,8 @@ const emailList = [
   'baonhieu114@gmail.com',
   'alongfatlemon@gmail.com',
   'princenchiba@gmail.com',
-  'emmanuelniyi157@gmail.com'
+  'emmanuelniyi157@gmail.com',
+  'pattykessy1@gmail.com'
 ]
 
 export default emailList
