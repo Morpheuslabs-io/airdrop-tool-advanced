@@ -1,6 +1,6 @@
 import React, {Component, Suspense} from 'react';
 import swal from "sweetalert2";
-import logo from '../../assets/img/brand/logo-small.png'
+import logo from '../../assets/img/logo-small.png'
 import {Row, Col, Button, ButtonGroup, Container} from 'reactstrap';
 
 import { Navbar, Nav, NavDropdown, Badge } from 'react-bootstrap'
