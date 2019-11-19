@@ -1,0 +1,14 @@
+version: "3"
+
+services:
+
+  kyc-web:
+    image: midotrinh/kyc-web:latest
+    container_name: kyc-web
+    ports:
+      - ${PORT}:3000
+    environment:
+    - REACT_APP_EMAIL_WHITELIST=${EMAIL_WHITELIST}
+    - REACT_APP_COUNTRY_BLACKLIST=${COUNTRY_BLACKLIST}
+    - REACT_APP_WEB_APP_LOGO_URL=${WEB_APP_LOGO_URL}
+    - REACT_APP_WEB_APP_TITLE=${WEB_APP_TITLE}

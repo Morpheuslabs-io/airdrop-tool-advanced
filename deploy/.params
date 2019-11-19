@@ -1,0 +1,5 @@
+PORT='80'
+EMAIL_WHITELIST=$(cat ./file/email-whitelist.txt)
+COUNTRY_BLACKLIST=$(cat ./file/country-blacklist.txt)
+WEB_APP_LOGO_URL='https://morpheuslabs.io/storage/2019/05/logo.png'
+WEB_APP_TITLE='KYC Submission'
