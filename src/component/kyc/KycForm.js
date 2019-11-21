@@ -17,13 +17,22 @@ import { buildPayload, doFetch, getCustomerList } from './snippet';
 import docVerifyImg from '../../assets/img/document.webp.png'
 import faceVerifyImg from '../../assets/img/face.webp.png'
 
-import emailList from './email-list'
-import restrictedCountryList from './restricted-country'
+// import emailList from './email-list'
+// import restrictedCountryList from './restricted-country'
 import {reactLocalStorage} from 'reactjs-localstorage'
 
 import Webcam from "react-webcam";
 
 const MAX_FILE_SIZE = 2*1024*1024 // 2MB
+
+let emailList = process.env.REACT_APP_EMAIL_WHITELIST || ''
+emailList = emailList.toLowerCase()
+
+let restrictedCountryList = process.env.REACT_APP_COUNTRY_BLACKLIST || ''
+restrictedCountryList = restrictedCountryList.toLowerCase()
+
+const kycTitle = process.env.REACT_APP_WEB_APP_TITLE || 'KYC Submission'
+
 class KycForm extends Component {
 
   state = {
@@ -65,7 +74,7 @@ class KycForm extends Component {
     if (this.isCountryRestricted(selectedOption.label)) {
       Swal.fire({
         type: 'error',
-        title: 'KYC submission denied',
+        title: `${kycTitle} denied`,
         text: `Country is not given access`
       }).then(result => {
         window.location.reload();
@@ -354,27 +363,32 @@ class KycForm extends Component {
 		);
   }
 
+  // isEmailAllowed = (email) => {
+  //   for (let i=0; i<emailList.length; i++) {
+  //     if (email.toLowerCase() === emailList[i].toLowerCase()) {
+  //       return true
+  //     }
+  //   }
+  //   return false
+  // }
+
   isEmailAllowed = (email) => {
-    for (let i=0; i<emailList.length; i++) {
-      if (email.toLowerCase() === emailList[i].toLowerCase()) {
-        return true
-      }
+
+    if (emailList.indexOf(email.toLowerCase()) !== -1) {
+      return true
     }
-    return false
+    else {
+      return false
+    }
   }
 
   isCountryRestricted = (country) => {
-    for (let i=0; i<restrictedCountryList.length; i++) {
-      const restrictedCountry = restrictedCountryList[i]
-      const countryLowerCase = country.toLowerCase()
-      const restrictedCountryLowerCase = restrictedCountry.toLowerCase()
-      if (countryLowerCase.indexOf(restrictedCountryLowerCase) !== -1 ||
-          restrictedCountryLowerCase.indexOf(countryLowerCase) !== -1
-      ) {
-        return true
-      }
+    if (restrictedCountryList.indexOf(country.toLowerCase()) !== -1) {
+      return true
     }
-    return false
+    else {
+      return false
+    }
   }
 
   handleChange = (name, value) => {
@@ -389,7 +403,7 @@ class KycForm extends Component {
     if (!this.isEmailAllowed(email)) {
       Swal.fire({
         type: 'error',
-        title: 'KYC submission denied',
+        title: `${kycTitle} denied`,
         text: 'Email address is not given access'
       }).then(result => {
         window.location.reload();
@@ -400,7 +414,7 @@ class KycForm extends Component {
     if (submittedEmail.toLowerCase() === email.toLowerCase()) {
       Swal.fire({
         type: 'error',
-        title: 'KYC submission denied',
+        title: `${kycTitle} denied`,
         text: 'Email address has already been submitted'
       }).then(result => {
         window.location.reload();
@@ -476,10 +490,12 @@ class KycForm extends Component {
 
     // await getCustomerList();
 
+    console.log('process.env.REACT_APP_EMAIL_WHITELIST:', process.env.REACT_APP_EMAIL_WHITELIST)
+
     if (email === "") {
       Swal.fire({
         type: 'info',
-        title: 'KYC Submission',
+        title: `${kycTitle}`,
         text: 'Please enter an email'
       })
       return
@@ -488,7 +504,7 @@ class KycForm extends Component {
     if (fileDocBase64 === "") {
       Swal.fire({
         type: 'info',
-        title: 'KYC Submission',
+        title: `${kycTitle}`,
         text: 'Please upload your document'
       })
 
@@ -498,7 +514,7 @@ class KycForm extends Component {
     if (fileFaceBase64 === "") {
       Swal.fire({
         type: 'info',
-        title: 'KYC Submission',
+        title: `${kycTitle}`,
         text: 'Please upload your face image'
       })
 
@@ -533,7 +549,7 @@ class KycForm extends Component {
     // if (result === null) {
     //   Swal.fire({
     //     type: 'error',
-    //     title: 'KYC Submission',
+    //     title: `${kycTitle}`,
     //     text: 'Signature not validated'
     //   })
     // } else {
@@ -570,7 +586,7 @@ class KycForm extends Component {
 
       Swal.fire({
         type: 'error',
-        title: 'KYC submission denied',
+        title: `${kycTitle} denied`,
         text: `${docInfo} file size exceeds the limit of 2MB`
       }).then(result => {
         // window.location.reload();
@@ -844,7 +860,7 @@ class KycForm extends Component {
       <div className='container step-widget'>
           <div className='widget-header'>
             <div>
-              <p className='title'>KYC Submission</p>
+              <p className='title'>{kycTitle}</p>
             </div>
           </div>
           <div className='wg-content'>
@@ -970,7 +986,7 @@ class KycForm extends Component {
             // toggle={this.handleToggleModal}
           >
             <ModalHeader>
-              <div className='fs-16 clr-base tc'>KYC Submission Process</div>
+              <div className='fs-16 clr-base tc'>{`${kycTitle} Process`}</div>
             </ModalHeader>
             <ModalBody>
               <p>It may take a couple of minutes.</p>

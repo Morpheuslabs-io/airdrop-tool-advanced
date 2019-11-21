@@ -1,11 +1,13 @@
 import React, {Component, Suspense} from 'react';
 import swal from "sweetalert2";
-import logo from '../../assets/img/logo-small.png'
+// import logo from '../../assets/img/logo-small.png'
 import {Row, Col, Button, ButtonGroup, Container} from 'reactstrap';
 
 import { Navbar, Nav, NavDropdown, Badge } from 'react-bootstrap'
 
 import KycForm from './KycForm';
+
+const logo = process.env.REACT_APP_WEB_APP_LOGO_URL
 
 class KycContainer extends Component {
 
@@ -14,6 +16,8 @@ class KycContainer extends Component {
   };
 
   render() {
+
+    console.log('process.env.REACT_APP_EMAIL_WHITELIST:', process.env.REACT_APP_EMAIL_WHITELIST)
 
     return (
       <div>
