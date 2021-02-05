@@ -1,25 +1,13 @@
-import React, {Component, Suspense} from 'react';
-import swal from "sweetalert2";
-import Web3 from "web3";
-import { AppHeader,  AppNavbarBrand, AppSidebarToggler } from '@coreui/react';
-import {
-  preCheckMetaMask
-} from '../../util/blockchainHelper';
+import React, {Component} from 'react';
 import logo from '../../assets/img/brand/logo-small.png'
-import {Row, Col, Button, ButtonGroup, Container} from 'reactstrap';
 
-import { Navbar, Nav, NavDropdown, Badge } from 'react-bootstrap'
+import { Navbar, Nav, Badge } from 'react-bootstrap'
 
 import AirdropList from './AirdropList';
 
 class Airdrop extends Component {
 
   state = {
-    data: [],
-    contracts: [],
-    web3: null,
-    network: '',
-    currAccount: '',
     radioSelected: 'rinkeby'
   };
 
@@ -31,9 +19,6 @@ class Airdrop extends Component {
   }
 
   render() {
-
-    preCheckMetaMask()
-
     return (
       <div>
         <Navbar fixed="top" collapseOnSelect expand="lg" bg="info" variant="dark">

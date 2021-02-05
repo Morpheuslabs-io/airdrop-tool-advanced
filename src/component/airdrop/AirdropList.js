@@ -6,31 +6,87 @@ import PropTypes from 'prop-types';
 import Papa from 'papaparse';
 import Button2 from '@material-ui/core/Button';
 import swal from "sweetalert2";
-import {isValidAddress, getNetworkName, preCheckMetaMask, getMetamaskAddress} from '../../util/blockchainHelper';
 import Spinner from 'react-spinkit';
+
+import detectEthereumProvider from "@metamask/detect-provider";
+import Web3 from 'web3'
 
 import AirdropModal from './AirdropModal'
 
+const supportedNetwork = {
+  4: 'Ethereum Testnet Rinkeby',
+  80001: 'Matic Mumbai Testnet',
+}
+
+const networkName = {
+  1: 'Ethereum Mainnet',
+  3: 'Ethereum Testnet Ropsten',
+  4: 'Ethereum Testnet Rinkeby',
+  5: 'Ethereum Testnet Goerli',
+  42: 'Ethereum Testnet Kovan',
+  80001: 'Matic Mumbai Testnet',
+  137: 'Matic Mainnet'
+}
+
 class AirdropList extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      address: '',
+      amount: 0,
+      
+      erc20Address: '',
+      errorErc20Address: '',
+  
+      errorAddress: '',
+      errorAmount: '',
+      errorWMax: '',
+      
+      airdroplist: [],
+      spinnerShow: false,
+  
+      showModal: false,
+      resourceHandleErr: false,
+      isProcessing: false,
+    };
+    this.web3 = null
+  }
 
-  state = {
-    address: '',
-    amount: 0,
-    
-    erc20Address: '',
-    errorErc20Address: '',
+  componentDidMount() {
+    detectEthereumProvider(provider => {
+      if (provider) {
+        window.ethereum = provider
+        this.web3 = new Web3(window.ethereum);
 
-    errorAddress: '',
-    errorAmount: '',
-    errorWMax: '',
-    
-    airdroplist: [],
-    spinnerShow: false,
+        this.getAccounts()
+          .then((accounts) => {
+            window.ethereum.request({ method: 'eth_chainId' })
+              .then(network => {
 
-    showModal: false,
-    resourceHandleErr: false,
-    isProcessing: false,
-  };
+              })
+          })
+      }
+    });
+  }
+
+  async getAccounts() {
+    return new Promise((resolve, reject) => {
+      window.ethereum
+        .request({ method: 'eth_accounts' })
+        .then(accounts => this.web3.eth.defaultAccount = accounts[0])
+        .catch(err => reject(err))
+    })
+  }
+
+  async checkNetwork() {
+    const network = await window.ethereum.request({ method: 'eth_chainId' })
+    if (!supportedNetwork[network]) {
+      swal(`Please use ${Object.values(supportedNetwork)[0]} or ${Object.values(supportedNetwork)[1]}`, `Your current Metamask network (${networkName[network]}) is not supported.`, "warning");
+      return null
+    } else {
+      return networkName[network]
+    }
+  }
 
   handleChange = (name, value) => {
     this.setState({
@@ -41,7 +97,7 @@ class AirdropList extends Component {
   handleBlurAddress = () => {
     const address = this.state.address;
     let errorAddress = '';
-    if (address === '' || !isValidAddress(address))
+    if (address === '' || !this.web3.utils.isAddress(address))
       errorAddress = 'The inserted address is invalid';
     else
       errorAddress = '';
@@ -53,7 +109,7 @@ class AirdropList extends Component {
   handleBlurERC20Address = () => {
     const address = this.state.erc20Address;
     let errorAddress = '';
-    if (address === '' || !isValidAddress(address))
+    if (address === '' || !this.web3.utils.isAddress(address))
       errorAddress = 'The inserted address is invalid';
     else
       errorAddress = '';
@@ -77,7 +133,7 @@ class AirdropList extends Component {
     let errorAmount = '';
 
     let hasError = false;
-    if (address === '' || !isValidAddress(address)) {
+    if (address === '' || !this.web3.utils.isAddress(address)) {
       errorAddress = 'The inserted address is invalid';
       hasError = true;
     } else
@@ -114,7 +170,7 @@ class AirdropList extends Component {
         for (const idx in csv.data) {
           let addr = csv.data[idx][0]
           let amount = parseFloat(csv.data[idx][1])
-          if (isValidAddress(addr) && amount > 0) {
+          if (this.web3.utils.isAddress(addr) && amount > 0) {
             airdroplist.push({address: addr, amount: amount});
           }
         }
@@ -128,18 +184,11 @@ class AirdropList extends Component {
   };
 
   airdropWithMetamask = () => {
-    // console.log('airdropWithMetamask - this.state.erc20Address:', this.state.erc20Address)
-    // console.log('airdropWithMetamask - this.state.airdroplist:', this.state.airdroplist)
-    preCheckMetaMask()
-    let metamaskNet = getNetworkName()
-    if (metamaskNet.toLowerCase() !== 'rinkeby' && metamaskNet.toLowerCase() !== 'mainnet' ) {
-      swal("Please use Rinkeby or Mainnet", `Your current Metamask network (${metamaskNet}) is not supported.`, "warning");
-      return
-    }
-
-    if (getMetamaskAddress()) {
-      this.handleToggleModal()
-    }
+    this.checkNetwork().then(res => {
+      if (res) {
+        this.handleToggleModal()
+      }
+    })
   }
 
   handleToggleModal = () => {
@@ -166,7 +215,9 @@ class AirdropList extends Component {
   render() {
     return (
       <div>
-        <AirdropModal 
+        <AirdropModal
+          web3 = {this.web3 || new Web3(window.ethereum)}
+          checkNetwork = {this.checkNetwork}
           showModal={this.state.showModal}
           handleToggleModal={this.handleToggleModal}
           setResourceHandleErr={this.setResourceHandleErr}
