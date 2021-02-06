@@ -60,6 +60,7 @@ class AirdropList extends Component {
         console.log(accounts);
         window.ethereum.request({ method: 'eth_chainId' })
           .then(network => {
+            console.log(network);
             if (Number(network) === 4) {
               this.airdropAddress = process.env.REACT_APP_AIRDROP_CONTRACT_RINKEBY
             } else if (Number(network) === 80001) {
@@ -67,6 +68,7 @@ class AirdropList extends Component {
             } else {
 
             }
+            console.log(this.airdropAddress);
           })
       })
   }
@@ -75,7 +77,10 @@ class AirdropList extends Component {
     return new Promise((resolve, reject) => {
       window.ethereum
         .request({ method: 'eth_accounts' })
-        .then(accounts => this.web3.eth.defaultAccount = accounts[0])
+        .then(accounts => {
+          this.web3.eth.defaultAccount = accounts[0]
+          return resolve(accounts)
+        })
         .catch(err => reject(err))
     })
   }

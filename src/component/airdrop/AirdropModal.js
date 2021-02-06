@@ -10,6 +10,7 @@ import {
 } from 'reactstrap'
 import Spinner from 'react-spinkit'
 import swal from "sweetalert2";
+import BigNumber from "bignumber.js";
 import {getNormalGasPrice} from "../../util/Util";
 
 import AIRDROP_CONTRACT from '../../artifacts/Airdrop';
@@ -63,13 +64,10 @@ class AirdropModalContainer extends Component {
   }
 
   getAllowance = () => {
-    let {tokenInfo, airdropContractAddress} = this.state
+    let {tokenInfo} = this.state
     let instance = this.erc20ContractInst
 
-    return new Promise((resolve, reject) => instance.methods.allowance(this.props.web3.eth.defaultAccount, airdropContractAddress, (err, res) => {
-      if (err) return reject(err);
-      else return resolve(Number(res));
-    }));
+    return instance.methods.allowance(this.props.web3.eth.defaultAccount, this.props.airdropAddress).call().then(res => Number(res))
   };
 
   doAirdrop = async (erc20Address, addresses, amounts) => {
@@ -79,7 +77,7 @@ class AirdropModalContainer extends Component {
     console.log('doAirdrop - erc20Address:', erc20Address, ', airdropAddress:', airdropAddress, ', addresses:', addresses, ', amounts:', amounts);
     
     return new Promise((resolve, reject) => {
-      instance.methods.doAirDrop(erc20Address, amounts, addresses)
+      instance.methods.doAirDrop(erc20Address, amounts.map(a => BigNumber(a)), addresses)
         .send({from: web3.eth.defaultAccount})
           .on('confirmation', (confirmationNumber, receipt) => {
             resolve(receipt.transactionHash)
@@ -90,13 +88,13 @@ class AirdropModalContainer extends Component {
       })
   };
 
-  doAirdropBatch = (erc20Address, airdropContractAddress, airdropAddressBatch, airdropAmountBatch, i) => {
+  doAirdropBatch = (erc20Address, airdropAddressBatch, airdropAmountBatch, i) => {
     
     this.doAirdrop(erc20Address, airdropAddressBatch[i], airdropAmountBatch[i])
       .then(res => {
         console.log('doAirdrop (index:', i, ') - res:', res);
         if (++i < airdropAddressBatch.length) {
-          this.doAirdropBatch(erc20Address, airdropContractAddress, airdropAddressBatch, airdropAmountBatch, i)
+          this.doAirdropBatch(erc20Address, airdropAddressBatch, airdropAmountBatch, i)
         } else {
           this.props.setIsProcessing(false)
           this.props.setResourceHandleErr('Success')
@@ -113,56 +111,28 @@ class AirdropModalContainer extends Component {
 
     const airdropContractAddress = this.props.airdropAddress
 
-    const gasOpt = {
-      gas: GASLIMIT,
-      gasPrice: gasPrice,
-      from: this.props.web3.eth.defaultAccount
-    };
+    
 
     airdropTokenAmount *= 10**tokenInfo.decimals
     let i=0
 
     this.getAllowance()
       .then(allowance => {
-        if (allowance === 0) {
+        
           console.log('approveAndDoAirdrop - No allowance yet');
 
-          return new Promise((resolve, reject) => instance.approve(airdropContractAddress, airdropTokenAmount, gasOpt, (err, res) => {
-            if (err) return reject(err);
-            else {
-              console.log('approveAndDoAirdrop for allowance:', res);
+          instance.methods.approve(this.props.airdropAddress, BigNumber(airdropTokenAmount))
+            .send({from: this.props.web3.eth.defaultAccount})
+              .on('confirmation', (confirmationNumber, receipt) => {
+                console.log('approveAndDoAirdrop for allowance:', receipt.transactionHash);
               
-              setTimeout(() => {
-                this.doAirdropBatch(tokenInfo.address, airdropContractAddress, airdropAddressBatch, airdropAmountBatch, i)
-              }, 30*1000);
+                this.doAirdropBatch(tokenInfo.address, airdropAddressBatch, airdropAmountBatch, i)
 
-              return resolve(res);
-            }
-          }));
+                // return resolve(receipt.transactionHash);
+              })
+              .on('error', (error) => console.error)
 
-        } else {
-          console.log('approveAndDoAirdrop - Has already allowance:', allowance);
-
-          // First, must approve 0
-          return new Promise((resolve, reject) => instance.approve(airdropContractAddress, 0, gasOpt, (err, res) => {
-            if (err) return reject(err);
-            else {
-              console.log('approveAndDoAirdrop for 0 allowance:', res);
-              return new Promise((resolve, reject) => instance.approve(airdropContractAddress, airdropTokenAmount, gasOpt, (err, res) => {
-                if (err) return reject(err);
-                else {
-                  console.log('approveAndDoAirdrop for allowance:', res);
-                  
-                  setTimeout(async () => {
-                    this.doAirdropBatch(tokenInfo.address, airdropContractAddress, airdropAddressBatch, airdropAmountBatch, i)
-                  }, 30*1000);
-
-                  return resolve(res);
-                }
-              }));
-            }}
-          ));
-        }
+        
       });
   }
 
@@ -198,8 +168,10 @@ class AirdropModalContainer extends Component {
       let erc20Address = nextProps.erc20Address
       // console.log('erc20Address:', erc20Address);
       if (erc20Address && web3.utils.isAddress(erc20Address)) {
+        console.log('componentWillReceiveProps');
         this.getERC20TokenDetails(erc20Address, this.props.web3.eth.defaultAccount)
           .then(tokenInfo => {
+            console.log(tokenInfo);
             tokenInfo.address = erc20Address
             this.setState({
               tokenInfo
@@ -258,11 +230,13 @@ class AirdropModalContainer extends Component {
   async componentDidMount() {
     let {web3, erc20Address} = this.props
     this.erc20ABI = await (await fetch("./erc20.abi.json")).json();
+    this.networkName = await this.props.checkNetwork()
   }
 
   render () {
     const { tokenInfo, airdropTokenAmount, airdropReceiverAmount } = this.state
     const { showModal, isProcessing, handleToggleModal, erc20Address, resourceHandleErr } = this.props
+    
     return (
       <div>
         <Modal
@@ -289,13 +263,13 @@ class AirdropModalContainer extends Component {
                 )}
               </Collapse>
             </div>
-            <div>
+            {tokenInfo && <div>
               <ul>
                 <li>
                   <b> Token info </b>
                     <ul>
                       <li>
-                        Address: {erc20Address}
+                        Address: {tokenInfo.address}
                       </li>
                       <li>
                         Name: {tokenInfo.name}
@@ -321,10 +295,10 @@ class AirdropModalContainer extends Component {
                   <b> Your current account address: </b> {this.props.web3.eth.defaultAccount}
                 </li>
                 <li>
-                  <b> Your current network: </b> {this.props.checkNetwork()}
+                  <b> Your current network: </b> {this.networkName}
                 </li>
               </ul>
-            </div>
+            </div>}
             <div>
               <Row>
                 <Col className='float-left'>

@@ -9,6 +9,7 @@
     "@coreui/react": "^2.1.1",
     "@material-ui/core": "^3.9.3",
     "@metamask/detect-provider": "^1.2.0",
+    "bignumber.js": "^9.0.1",
     "node-sass": "^4.10.0",
     "papaparse": "^4.6.3",
     "prop-types": "^15.7.2",
