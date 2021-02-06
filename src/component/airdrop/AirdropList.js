@@ -79,7 +79,7 @@ class AirdropList extends Component {
   }
 
   async checkNetwork() {
-    const network = await window.ethereum.request({ method: 'eth_chainId' })
+    const network = await window.ethereum.request({ method: 'eth_chainId' }).then(res => Number(res))
     if (!supportedNetwork[network]) {
       swal(`Please use ${Object.values(supportedNetwork)[0]} or ${Object.values(supportedNetwork)[1]}`, `Your current Metamask network (${networkName[network]}) is not supported.`, "warning");
       return null
