@@ -47,7 +47,7 @@ class AirdropModalContainer extends Component {
     console.log('airdropAmountBatch:', airdropAmountBatch);
 
     if (!tokenInfo) {
-      swal(`Metamask is locked`, 'Please unlock Metamask');
+      swal(`Metamask is locked`, 'Please unlock Metamask and refresh the page');
       return
     }
 
@@ -85,7 +85,7 @@ class AirdropModalContainer extends Component {
     
     return new Promise((resolve, reject) => {
       instance.methods.doAirDrop(erc20Address, amountsBigNum, addresses)
-        .send({from: web3.eth.defaultAccount})
+        .send({from: web3.eth.defaultAccount, gas: process.env.REACT_APP_GASLIMIT})
           .on('transactionHash', (transactionHash) => {
             console.log('doAirDrop - tx:', transactionHash);
             return resolve(transactionHash)
@@ -159,7 +159,7 @@ class AirdropModalContainer extends Component {
         userBalance: Number(userBalance) / 10**Number(decimals),
       };
     } catch (err) {
-      swal(`Metamask is locked`, 'Please unlock Metamask');
+      swal(`Metamask is locked`, 'Please unlock Metamask and refresh the page');
       return null
     }
   }

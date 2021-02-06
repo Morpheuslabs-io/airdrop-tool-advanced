@@ -79,14 +79,14 @@ class AirdropList extends Component {
         .request({ method: 'eth_accounts' })
         .then(accounts => {
           if (!accounts || !accounts[0]) {
-            swal(`Metamask is locked`, 'Please unlock Metamask');
+            swal(`Metamask is locked`, 'Please unlock Metamask and refresh the page');
             return resolve(null)  
           }
           this.web3.eth.defaultAccount = accounts[0]
           return resolve(accounts)
         })
         .catch(err => {
-          swal(`Metamask is locked`, 'Please unlock Metamask');
+          swal(`Metamask is locked`, 'Please unlock Metamask and refresh the page');
           return reject(err)
         })
     })
@@ -102,7 +102,7 @@ class AirdropList extends Component {
         return networkName[network]
       }
     } catch (e) {
-      swal(`Metamask is locked`, 'Please unlock Metamask');
+      swal(`Metamask is locked`, 'Please unlock Metamask and refresh the page');
       return null
     }
   }
