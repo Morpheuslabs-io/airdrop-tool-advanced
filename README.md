@@ -1,6 +1,13 @@
 # Airdrop Advanced Tool
 
-Send any ERC20 tokens to thousands of receivers
+This tool is used to airdrop a specified ERC20 token to multiple wallet addresses that are provided by uploading a CSV file or by adding manually.
+
+Please ensure that the connected Metamask wallet owns the ERC20 tokens.
+
+Supported networks are:
+
+  - Ethereum Testnet Rinkeby
+  - Matic Mumbai Testnet
 
 ## Installation 
 
@@ -42,5 +49,5 @@ row `http-server`. Please be noted that, all the ports displayed in this view me
 
   - Upon re-compiling for new modification of the smart contract, fetch the JSON file from the online Remix tool to replace existing the JSON file.
 
-  - Upon re-deployment, the `REACT_APP_AIRDROP_CONTRACT_RINKEBY` value in `.env` file must be updated. 
+  - Upon re-deployment, the `REACT_APP_AIRDROP_CONTRACT_RINKEBY` value or `REACT_APP_AIRDROP_CONTRACT_MATIC_TESTNET` value in `.env` file must be updated. 
 
