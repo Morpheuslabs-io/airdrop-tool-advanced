@@ -46,6 +46,11 @@ class AirdropModalContainer extends Component {
     console.log('airdropAddressBatch:', airdropAddressBatch);
     console.log('airdropAmountBatch:', airdropAmountBatch);
 
+    if (!tokenInfo) {
+      swal(`Metamask is locked`, 'Please unlock Metamask');
+      return
+    }
+
     if (!tokenInfo.name || tokenInfo.name === '' || isNaN(tokenInfo.userBalance)) {
       swal('Error', `The specified token does not exist on ${this.state.metamaskNet}`)
       return
@@ -67,99 +72,96 @@ class AirdropModalContainer extends Component {
     let {tokenInfo} = this.state
     let instance = this.erc20ContractInst
 
-    return instance.methods.allowance(this.props.web3.eth.defaultAccount, this.props.airdropAddress).call().then(res => Number(res))
+    return instance.methods.allowance(this.props.web3.eth.defaultAccount, this.props.airdropAddress).call().then(res => Number(res)).catch(() => null)
   };
 
   doAirdrop = async (erc20Address, addresses, amounts) => {
     const {web3, airdropAddress} = this.props
     const instance = new web3.eth.Contract(AIRDROP_CONTRACT.abi, airdropAddress);
   
+    const amountsBigNum = amounts.map(a => BigNumber(a))
+
     console.log('doAirdrop - erc20Address:', erc20Address, ', airdropAddress:', airdropAddress, ', addresses:', addresses, ', amounts:', amounts);
     
     return new Promise((resolve, reject) => {
-      instance.methods.doAirDrop(erc20Address, amounts.map(a => BigNumber(a)), addresses)
+      instance.methods.doAirDrop(erc20Address, amountsBigNum, addresses)
         .send({from: web3.eth.defaultAccount})
-          .on('confirmation', (confirmationNumber, receipt) => {
-            resolve(receipt.transactionHash)
+          .on('transactionHash', (transactionHash) => {
+            console.log('doAirDrop - tx:', transactionHash);
+            return resolve(transactionHash)
           })
           .on('error', (error => {
-            reject(error)
+            return reject(error)
           }))
       })
   };
-
-  doAirdropBatch = (erc20Address, airdropAddressBatch, airdropAmountBatch, i) => {
-    
-    this.doAirdrop(erc20Address, airdropAddressBatch[i], airdropAmountBatch[i])
-      .then(res => {
-        console.log('doAirdrop (index:', i, ') - res:', res);
-        if (++i < airdropAddressBatch.length) {
-          this.doAirdropBatch(erc20Address, airdropAddressBatch, airdropAmountBatch, i)
-        } else {
-          this.props.setIsProcessing(false)
-          this.props.setResourceHandleErr('Success')
-        }
-      })
-  }
 
   approveAndDoAirdrop = () => {
     let {tokenInfo, airdropTokenAmount, gasPrice, airdropAddressBatch, airdropAmountBatch} = this.state
     let instance = this.erc20ContractInst
     
-    // const GAS = process.env.REACT_APP_GAS;
-    // const GASPRICE = process.env.REACT_APP_GAS_PRICE;
-
-    const airdropContractAddress = this.props.airdropAddress
-
-    
-
     airdropTokenAmount *= 10**tokenInfo.decimals
-    let i=0
-
     this.getAllowance()
       .then(allowance => {
-        
-          console.log('approveAndDoAirdrop - No allowance yet');
+        // if (!allowance) return
+        console.log('approveAndDoAirdrop - Current allowance:', allowance);
 
-          instance.methods.approve(this.props.airdropAddress, BigNumber(airdropTokenAmount))
+        instance.methods.approve(this.props.airdropAddress, BigNumber(0))
+          .send({from: this.props.web3.eth.defaultAccount})
+            .on('transactionHash', (transactionHash) => {
+              console.log('approveAndDoAirdrop for allowance 0, tx:', transactionHash);
+              instance.methods.approve(this.props.airdropAddress, BigNumber(airdropTokenAmount))
             .send({from: this.props.web3.eth.defaultAccount})
-              .on('confirmation', (confirmationNumber, receipt) => {
-                console.log('approveAndDoAirdrop for allowance:', receipt.transactionHash);
+              .on('transactionHash', (transactionHash) => {
+                console.log('approveAndDoAirdrop for allowance:', airdropTokenAmount, ', tx:', transactionHash);
               
-                this.doAirdropBatch(tokenInfo.address, airdropAddressBatch, airdropAmountBatch, i)
-
-                // return resolve(receipt.transactionHash);
+                this.doAirdrop(tokenInfo.address, airdropAddressBatch[0], airdropAmountBatch[0])
+                  .then(res => {
+                    this.props.setIsProcessing(false)
+                    this.props.setResourceHandleErr('Success')
+                  })
+                  .catch(err => {
+                    console.log('doAirdrop - Error:', err);
+                    this.props.setIsProcessing(false)
+                    this.props.setResourceHandleErr('Failure')
+                  })
               })
               .on('error', (error) => console.error)
+            })
+            .on('error', (error) => console.error)
 
-        
       });
   }
 
   getERC20TokenDetails = async (erc20Address) => {
 
-    this.erc20ContractInst = new this.props.web3.eth.Contract(this.erc20ABI, erc20Address)
-    console.log('erc20Address:', erc20Address);
+    try {
+      this.erc20ContractInst = new this.props.web3.eth.Contract(this.erc20ABI, erc20Address)
+      console.log('erc20Address:', erc20Address);
 
-    let instance = this.erc20ContractInst
-    const name = await instance.methods.name().call()
-    console.log(name);
+      let instance = this.erc20ContractInst
+      const name = await instance.methods.name().call()
+      console.log(name);
 
-    const symbol = await instance.methods.symbol().call()
-    console.log(symbol);
+      const symbol = await instance.methods.symbol().call()
+      console.log(symbol);
 
-    const decimals = await instance.methods.decimals().call()
-    console.log(decimals);
+      const decimals = await instance.methods.decimals().call()
+      console.log(decimals);
 
-    const userBalance = await instance.methods.balanceOf(this.props.web3.eth.defaultAccount).call()
-    console.log(userBalance);
+      const userBalance = await instance.methods.balanceOf(this.props.web3.eth.defaultAccount).call()
+      console.log(userBalance);
 
-    return {
-      name,
-      symbol,
-      decimals,
-      userBalance: Number(userBalance) / 10**Number(decimals),
-    };
+      return {
+        name,
+        symbol,
+        decimals,
+        userBalance: Number(userBalance) / 10**Number(decimals),
+      };
+    } catch (err) {
+      swal(`Metamask is locked`, 'Please unlock Metamask');
+      return null
+    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -171,6 +173,9 @@ class AirdropModalContainer extends Component {
         console.log('componentWillReceiveProps');
         this.getERC20TokenDetails(erc20Address, this.props.web3.eth.defaultAccount)
           .then(tokenInfo => {
+            if (!tokenInfo) {
+              return
+            }
             console.log(tokenInfo);
             tokenInfo.address = erc20Address
             this.setState({
@@ -254,7 +259,7 @@ class AirdropModalContainer extends Component {
                   <Alert color='success'>
                     <div>
                       <div>
-                        <b>Airdrop done! Please check transactions on EtherScan via your Metamask</b>
+                        <b>Airdrop done! Please check transactions on your Metamask</b>
                       </div>
                     </div>
                   </Alert>

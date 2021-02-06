@@ -78,20 +78,32 @@ class AirdropList extends Component {
       window.ethereum
         .request({ method: 'eth_accounts' })
         .then(accounts => {
+          if (!accounts || !accounts[0]) {
+            swal(`Metamask is locked`, 'Please unlock Metamask');
+            return resolve(null)  
+          }
           this.web3.eth.defaultAccount = accounts[0]
           return resolve(accounts)
         })
-        .catch(err => reject(err))
+        .catch(err => {
+          swal(`Metamask is locked`, 'Please unlock Metamask');
+          return reject(err)
+        })
     })
   }
 
   async checkNetwork() {
-    const network = await window.ethereum.request({ method: 'eth_chainId' }).then(res => Number(res))
-    if (!supportedNetwork[network]) {
-      swal(`Please use ${Object.values(supportedNetwork)[0]} or ${Object.values(supportedNetwork)[1]}`, `Your current Metamask network (${networkName[network]}) is not supported.`, "warning");
+    try {
+      const network = await window.ethereum.request({ method: 'eth_chainId' }).then(res => Number(res))
+      if (!supportedNetwork[network]) {
+        swal(`Please use ${Object.values(supportedNetwork)[0]} or ${Object.values(supportedNetwork)[1]}`, `Your current Metamask network (${networkName[network]}) is not supported.`, "warning");
+        return null
+      } else {
+        return networkName[network]
+      }
+    } catch (e) {
+      swal(`Metamask is locked`, 'Please unlock Metamask');
       return null
-    } else {
-      return networkName[network]
     }
   }
 
@@ -191,10 +203,17 @@ class AirdropList extends Component {
   };
 
   airdropWithMetamask = () => {
-    this.checkNetwork().then(res => {
-      if (res) {
-        this.handleToggleModal()
+    this.getAccounts().then(res => {
+      if (!res) {
+        window.location.reload()
+        return
       }
+      this.checkNetwork().then(res => {
+        console.log('airdropWithMetamask:', res);
+        if (res) {
+          this.handleToggleModal()
+        }
+      })
     })
   }
 
