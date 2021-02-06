@@ -32,11 +32,11 @@ class AirdropModalContainer extends Component {
       airdropReceiverAmount: 0,
       gasPrice: 0,
 
-      airdropContractAddress: '',
       metamaskNet: ''
     }
 
     this.erc20ContractInst = null
+    this.erc20ABI = null
   }
 
   handleAirdropWithMetaMask = () => {
@@ -63,17 +63,17 @@ class AirdropModalContainer extends Component {
   }
 
   getAllowance = () => {
-    let {tokenInfo, erc20ContractInst, airdropContractAddress} = this.state
-    let instance = erc20ContractInst.at(tokenInfo.address)
+    let {tokenInfo, airdropContractAddress} = this.state
+    let instance = this.erc20ContractInst
 
-    return new Promise((resolve, reject) => instance.allowance(this.props.web3.eth.defaultAccount, airdropContractAddress, (err, res) => {
+    return new Promise((resolve, reject) => instance.methods.allowance(this.props.web3.eth.defaultAccount, airdropContractAddress, (err, res) => {
       if (err) return reject(err);
       else return resolve(Number(res));
     }));
   };
 
-  doAirdrop = async (erc20Address, airdropAddress, addresses, amounts) => {
-    const {web3} = this.props
+  doAirdrop = async (erc20Address, addresses, amounts) => {
+    const {web3, airdropAddress} = this.props
     const instance = new web3.eth.Contract(AIRDROP_CONTRACT.abi, airdropAddress);
   
     console.log('doAirdrop - erc20Address:', erc20Address, ', airdropAddress:', airdropAddress, ', addresses:', addresses, ', amounts:', amounts);
@@ -92,7 +92,7 @@ class AirdropModalContainer extends Component {
 
   doAirdropBatch = (erc20Address, airdropContractAddress, airdropAddressBatch, airdropAmountBatch, i) => {
     
-    this.doAirdrop(erc20Address, airdropContractAddress, airdropAddressBatch[i], airdropAmountBatch[i])
+    this.doAirdrop(erc20Address, airdropAddressBatch[i], airdropAmountBatch[i])
       .then(res => {
         console.log('doAirdrop (index:', i, ') - res:', res);
         if (++i < airdropAddressBatch.length) {
@@ -105,11 +105,13 @@ class AirdropModalContainer extends Component {
   }
 
   approveAndDoAirdrop = () => {
-    let {tokenInfo, airdropTokenAmount, erc20ContractInst, gasPrice, airdropAddressBatch, airdropAmountBatch, airdropContractAddress} = this.state
-    let instance = erc20ContractInst.at(tokenInfo.address)
+    let {tokenInfo, airdropTokenAmount, gasPrice, airdropAddressBatch, airdropAmountBatch} = this.state
+    let instance = this.erc20ContractInst
     
     // const GAS = process.env.REACT_APP_GAS;
     // const GASPRICE = process.env.REACT_APP_GAS_PRICE;
+
+    const airdropContractAddress = this.props.airdropAddress
 
     const gasOpt = {
       gas: GASLIMIT,
@@ -164,38 +166,30 @@ class AirdropModalContainer extends Component {
       });
   }
 
-  getERC20TokenDetails = (erc20Address) => {
+  getERC20TokenDetails = async (erc20Address) => {
 
-    // console.log(`getERC20TokenDetails - erc20Address:${erc20Address}, this.props.web3.eth.defaultAccount:${this.props.web3.eth.defaultAccount}`);
-      
-    let instance = this.state.erc20ContractInst.at(erc20Address)
-    const name = new Promise((resolve, reject) => instance.name((err, res) => {
-      if (err) return reject(err);
-      else return resolve(res);
-    }));
+    this.erc20ContractInst = new this.props.web3.eth.Contract(this.erc20ABI, erc20Address)
+    console.log('erc20Address:', erc20Address);
 
-    const symbol = new Promise((resolve, reject) => instance.symbol((err, res) => {
-      if (err) return reject(err);
-      else return resolve(res);
-    }));
-    const decimals = new Promise((resolve, reject) => instance.decimals((err, res) => {
-      if (err) return reject(err);
-      else return resolve(res);
-    }));
+    let instance = this.erc20ContractInst
+    const name = await instance.methods.name().call()
+    console.log(name);
 
-    const userBalance = new Promise((resolve, reject) => instance.balanceOf(this.props.web3.eth.defaultAccount, (err, res) => {
-      if (err) return reject(err);
-      else return resolve((res));
-    }));
+    const symbol = await instance.methods.symbol().call()
+    console.log(symbol);
 
-    return Promise.all([name, symbol, decimals, userBalance]).then(data => {
-      return {
-        name: data[0],
-        symbol: data[1],
-        decimals: Number(data[2]),
-        userBalance: Number(data[3]) / 10**Number(data[2]),
-      };
-    });
+    const decimals = await instance.methods.decimals().call()
+    console.log(decimals);
+
+    const userBalance = await instance.methods.balanceOf(this.props.web3.eth.defaultAccount).call()
+    console.log(userBalance);
+
+    return {
+      name,
+      symbol,
+      decimals,
+      userBalance: Number(userBalance) / 10**Number(decimals),
+    };
   }
 
   componentWillReceiveProps(nextProps) {
@@ -204,7 +198,7 @@ class AirdropModalContainer extends Component {
       let erc20Address = nextProps.erc20Address
       // console.log('erc20Address:', erc20Address);
       if (erc20Address && web3.utils.isAddress(erc20Address)) {
-        this.getERC20TokenDetails(erc20Address, this.state.this.props.web3.eth.defaultAccount)
+        this.getERC20TokenDetails(erc20Address, this.props.web3.eth.defaultAccount)
           .then(tokenInfo => {
             tokenInfo.address = erc20Address
             this.setState({
@@ -263,8 +257,7 @@ class AirdropModalContainer extends Component {
 
   async componentDidMount() {
     let {web3, erc20Address} = this.props
-    let erc20ABI = await (await fetch("./erc20.abi.json")).json();
-    this.erc20ContractInst = new web3.eth.Contract(erc20ABI, erc20Address)
+    this.erc20ABI = await (await fetch("./erc20.abi.json")).json();
   }
 
   render () {

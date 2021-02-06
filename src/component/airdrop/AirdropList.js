@@ -50,23 +50,25 @@ class AirdropList extends Component {
       isProcessing: false,
     };
     this.web3 = null
+    this.airdropAddress = null
   }
 
   componentDidMount() {
-    detectEthereumProvider(provider => {
-      if (provider) {
-        window.ethereum = provider
-        this.web3 = new Web3(window.ethereum);
+    this.web3 = new Web3(window.ethereum);
+    this.getAccounts()
+      .then((accounts) => {
+        console.log(accounts);
+        window.ethereum.request({ method: 'eth_chainId' })
+          .then(network => {
+            if (Number(network) === 4) {
+              this.airdropAddress = process.env.REACT_APP_AIRDROP_CONTRACT_RINKEBY
+            } else if (Number(network) === 80001) {
+              this.airdropAddress = process.env.REACT_APP_AIRDROP_CONTRACT_MATIC_TESTNET
+            } else {
 
-        this.getAccounts()
-          .then((accounts) => {
-            window.ethereum.request({ method: 'eth_chainId' })
-              .then(network => {
-
-              })
+            }
           })
-      }
-    });
+      })
   }
 
   async getAccounts() {
@@ -226,6 +228,8 @@ class AirdropList extends Component {
           isProcessing={this.state.isProcessing}
 
           erc20Address={this.state.erc20Address}
+          airdropAddress={this.airdropAddress}
+
           airdroplist={this.state.airdroplist}
 
           radioSelected={this.props.radioSelected}
@@ -235,10 +239,17 @@ class AirdropList extends Component {
             <div>
               <p className='title'>Airdrop Tool</p>
               <p className='description'>
-                This tool is used to airdrop a specified ERC20 token to thousands of wallet addresses that are provided by uploading a CSV file or by adding manually.
+                This tool is used to airdrop a specified ERC20 token to multiple wallet addresses that are provided by uploading a CSV file or by adding manually.
               </p>
               <p className='description'>
-                <b> Either Rinkeby testnet or Mainnet is supported. </b>
+                Please ensure that the connected Metamask wallet owns the ERC20 tokens.
+              </p>
+              <br />
+              <p className='description'>
+                <b> Supported networks are:</b>
+                  <ul>
+                    {Object.values(supportedNetwork).map(net => <li>{net}</li>)}
+                  </ul>
               </p>
             </div>
           </div>
